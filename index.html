@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Game Checklists</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: a short shelf of game cards; one card per checklist folder */
+:root{
+  --bg:#eef0f4; --surface:#ffffff; --sunk:#e3e6ee; --ink:#1b2033; --muted:#5d6479;
+  --line:#cfd4e0; --accent:#1f3a8a; --coin:#a8780f;
+  --display:"IM Fell English SC", "Iowan Old Style", Georgia, serif;
+  --body:"Alegreya Sans", "Gill Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme:light;
+  padding-top:env(safe-area-inset-top); padding-bottom:env(safe-area-inset-bottom);
+}
+@media (prefers-color-scheme: dark){ :root{
+  --bg:#0e1120; --surface:#161a2d; --sunk:#1d2238; --ink:#e7e9f2; --muted:#9aa1b8;
+  --line:#2b3150; --accent:#9db4ff; --coin:#e3b54a; color-scheme:dark }}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45}
+.wrap{max-width:880px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:48px 64px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,7vw,3.2rem);line-height:1.05;margin:0;text-wrap:balance}
+.lead{color:var(--muted);margin:.5rem 0 0;max-width:60ch}
+.games{list-style:none;margin:32px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.game a{display:flex;flex-direction:column;gap:8px;height:100%;box-sizing:border-box;padding:18px 18px 16px;background:var(--surface);border:1px solid var(--line);border-radius:12px;color:inherit;text-decoration:none;transition:border-color .15s,transform .15s}
+.game a:hover{border-color:var(--accent);transform:translateY(-2px)}
+.game a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.game .t{font-family:var(--display);font-size:1.5rem;line-height:1.1}
+.game .d{color:var(--muted);font-size:.95rem}
+.game .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto;padding-top:6px}
+.game .tags span{font-size:.75rem;border:1px solid var(--line);border-radius:5px;padding:1px 7px;background:var(--sunk)}
+.game .go{color:var(--accent);font-weight:700;font-size:.9rem}
+[hidden]{display:none!important}
+.game.soon a{border-style:dashed;pointer-events:none;opacity:.7}
+.foot{margin-top:36px;color:var(--muted);font-size:.85rem;max-width:60ch}
+@media (prefers-reduced-motion:reduce){ .game a{transition:none} .game a:hover{transform:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Game Checklists</h1>
+  <p class="lead">Pick a game. Each checklist saves your progress in this browser.</p>
+  <ul class="games">
+    <li class="game">
+      <a href="octopath-traveler-2/">
+        <span class="t">Octopath Traveler II</span>
+        <span class="d">Steal targets and chests for every zone, all 67 side stories, and every townsperson worth Scrutinizing.</span>
+        <span class="tags"><span>1,055 steals</span><span>534 chests</span><span>67 side stories</span><span>298 info NPCs</span></span>
+        <span class="go">Open checklist →</span>
+      </a>
+    </li>
+    <!-- Placeholder for the next game: remove "hidden" to show it again -->
+    <li class="game soon" hidden>
+      <a href="#" aria-disabled="true" tabindex="-1">
+        <span class="t">Next game</span>
+        <span class="d">Add another checklist in its own folder and list it here.</span>
+      </a>
+    </li>
+  </ul>
+  <p class="foot">Progress is stored separately for each game, in each browser you use.</p>
+</div>
+</body>
+</html>
