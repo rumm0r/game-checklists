@@ -257,13 +257,13 @@ kbd{font-family:var(--body);font-size:.72rem;border:1px solid var(--line);border
 <aside class="side" aria-label="Navigation">
     <nav class="tabs" aria-label="Pages">
       <span class="sidelabel">Lists</span>
-      <button type="button" class="tab pagetab" data-tab="zones" aria-current="page">Steal &amp; Treasures</button>
+      <button type="button" class="tab pagetab" data-tab="zones" aria-current="page">Items to Steal &amp; Treasures</button>
       <button type="button" class="tab pagetab" data-tab="sidestories" aria-current="false">Side stories</button>
       <button type="button" class="tab pagetab" data-tab="info" aria-current="false">Scrutinize &amp; info</button>
     </nav>
     <div class="togs" id="togs" role="group" aria-label="Sections to show">
       <span class="tabhint">Show</span>
-      <button type="button" class="tab tog" data-view="steal" aria-pressed="true"><span class="box" aria-hidden="true"></span>Steal</button>
+      <button type="button" class="tab tog" data-view="steal" aria-pressed="true"><span class="box" aria-hidden="true"></span>Items to Steal</button>
       <button type="button" class="tab tog" data-view="treasures" aria-pressed="true"><span class="box" aria-hidden="true"></span>Treasures</button>
     </div>
 </aside>
@@ -272,7 +272,7 @@ kbd{font-family:var(--body);font-size:.72rem;border:1px solid var(--line);border
   <section id="v-zones">
     <div class="vhead">
       <div class="vtext">
-        <h2 class="vt" id="zTitle">Steal &amp; treasures</h2>
+        <h2 class="vt" id="zTitle">Items to Steal &amp; Treasures</h2>
         <p class="vd" id="zDesc">Every town, field and dungeon, with its steal targets and chests together.</p>
       </div>
       <div class="vprog zprog">
@@ -282,7 +282,7 @@ kbd{font-family:var(--body);font-size:.72rem;border:1px solid var(--line);border
     </div>
     <details class="tipsbox"><summary>How this list works</summary>
       <ul>
-        <li>Each zone shows its <b>Steal</b> targets and its <b>Chests</b>. Use the toggles at the top to show either or both.</li>
+        <li>Each zone shows its <b>Items to Steal</b> and its <b>Chests</b>. Use the toggles in the sidebar to show either or both.</li>
         <li><b>Stealing is daytime only.</b> Only NPCs who are out during the day are listed. Save first: a failed steal lowers your reputation in that town.</li>
         <li>Chapter tags show which story chapters take you through a zone. Fields carry the chapters of the town they lead to (<i>on the way</i>). <b>Optional</b> zones are side dungeons and places no chapter visits.</li>
         <li><span class="star">Prize</span> marks top gear, large Nuts, jams and high-value items. <span class="dl">Lv 34</span> is a zone's danger level.</li>
@@ -581,7 +581,7 @@ function renderZChips() {
 }
 function zHeader() {
   const s = showSteal(), t = showTre();
-  $("#zTitle").textContent = s && t ? "Steal & treasures" : s ? "Steal checklist" : "Treasures";
+  $("#zTitle").textContent = s && t ? "Items to Steal & Treasures" : s ? "Items to Steal" : "Treasures";
   $("#zDesc").textContent = s && t ? "Every town, field and dungeon, with its steal targets and chests together."
     : s ? "Every townsperson Throné can rob by day, zone by zone." : "Chests in every town, field, dungeon and out at sea, zone by zone.";
 }
@@ -627,7 +627,7 @@ function zoneHTML(z, q) {
     <span class="tn">${esc(z.name)}<span class="ttype">${TYPE_NAME[z.type] || z.type}</span>${z.lv ? ` <span class="dl">Lv ${z.lv}</span>` : ""}${zstate.sort === "story" ? `<span class="rg">${esc(z.region)}</span>` : ""}</span>
     <span class="ct zct">${zCountText(z)}</span>${zTags(z)}</summary>
     <div class="zbody">
-      ${sh ? `<div class="zsec"><h3 class="zh">Steal <small class="zs">${k.s[0]}/${k.s[1]}</small></h3><div class="npcs">${sh}</div></div>` : ""}
+      ${sh ? `<div class="zsec"><h3 class="zh">Items to Steal <small class="zs">${k.s[0]}/${k.s[1]}</small></h3><div class="npcs">${sh}</div></div>` : ""}
       ${ch ? `<div class="zsec"><h3 class="zh">Chests <small class="zc">${k.c[0]}/${k.c[1]}</small></h3><div class="npcs">${ch}</div></div>` : ""}
     </div></details>`;
 }
