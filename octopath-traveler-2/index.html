@@ -15,16 +15,17 @@
 /* Layout: a thief's ledger — sticky toolbar of region chips + search, then each town as a collapsible page of NPC rows with item checkboxes. */
 :root{
   --bg:#eef0f4; --surface:#ffffff; --sunk:#e3e6ee; --ink:#1b2033; --muted:#5d6479;
-  --line:#cfd4e0; --accent:#1f3a8a; --coin:#a8780f; --coin-bg:#f6ecd2; --done:#7f869a;
+  --line:#cfd4e0; --accent:#1f3a8a; --coin:#a8780f; --coin-ink:#7d5800; --coin-bg:#f6ecd2; --done:#62687c;
   --display:"IM Fell English SC", "Iowan Old Style", Georgia, serif;
   --body:"Alegreya Sans", "Gill Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme:light;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#0e1120; --surface:#161a2d; --sunk:#1d2238; --ink:#e7e9f2; --muted:#9aa1b8;
-  --line:#2b3150; --accent:#9db4ff; --coin:#e3b54a; --coin-bg:#2e2715; --done:#6b7189; color-scheme:dark }}
+  --line:#2b3150; --accent:#9db4ff; --coin:#e3b54a; --coin-ink:#e3b54a; --coin-bg:#2e2715; --done:#868ca5; color-scheme:dark }}
 :root[data-theme="dark"]{
   --bg:#0e1120; --surface:#161a2d; --sunk:#1d2238; --ink:#e7e9f2; --muted:#9aa1b8;
-  --line:#2b3150; --accent:#9db4ff; --coin:#e3b54a; --coin-bg:#2e2715; --done:#6b7189; color-scheme:dark }
+  --line:#2b3150; --accent:#9db4ff; --coin:#e3b54a; --coin-ink:#e3b54a; --coin-bg:#2e2715; --done:#868ca5; color-scheme:dark }
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45}
 .wrap{max-width:960px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:22px 64px}
 .bar{flex:1 1 220px;height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
@@ -61,7 +62,7 @@ summary .tn{font-family:var(--display);font-size:1.25rem;flex:1 1 auto;min-width
 summary .tn::before{content:"▸";display:inline-block;width:1em;color:var(--muted);transition:transform .15s}
 details[open]>summary .tn::before{transform:rotate(90deg)}
 summary .ct{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.9rem}
-summary .ct.full{color:var(--coin);font-weight:700}
+summary .ct.full{color:var(--coin-ink);font-weight:700}
 .mini{width:70px;height:5px;background:var(--sunk);border-radius:99px;overflow:hidden;align-self:center}
 .mini>i{display:block;height:100%;background:var(--coin)}
 .npcs{border-top:1px solid var(--line)}
@@ -76,7 +77,7 @@ summary .ct.full{color:var(--coin);font-weight:700}
 .it input{accent-color:var(--coin);width:17px;height:17px;flex:none}
 .it .nm{min-width:0}
 .it input:checked+.nm{color:var(--done);text-decoration:line-through;text-decoration-color:var(--done)}
-.star{font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--coin);background:var(--coin-bg);border-radius:4px;padding:1px 6px;font-weight:700;flex:none}
+.star{font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--coin-ink);background:var(--coin-bg);border-radius:4px;padding:1px 6px;font-weight:700;flex:none}
 .empty{color:var(--muted);text-align:center;padding:30px 0}
 .foot{margin-top:28px;color:var(--muted);font-size:.85rem;max-width:65ch}
 .foot a{color:var(--accent)}
@@ -93,7 +94,7 @@ summary .ct.full{color:var(--coin);font-weight:700}
 .qbody{border-top:1px solid var(--line);padding:12px 16px 14px;display:flex;flex-direction:column;gap:6px}
 .qbody .meta{margin:0;max-width:75ch}
 .qbody .muted{color:var(--muted)}
-.qbody .reward{color:var(--coin);font-weight:500}
+.qbody .reward{color:var(--coin-ink);font-weight:500}
 .steps{margin:4px 0;padding-left:1.4em;display:flex;flex-direction:column;gap:5px;max-width:75ch}
 .steps li{padding-left:2px}
 .steps li::marker{color:var(--coin);font-variant-numeric:tabular-nums;font-weight:700}
@@ -129,8 +130,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .zprog .pl{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
 .zprog .pp b{justify-self:end}
 .zct{display:inline-flex;gap:6px;flex-wrap:wrap}
-.zct .full{color:var(--coin);font-weight:700}
-.zct .dot{color:var(--line)}
+.zct .full{color:var(--coin-ink);font-weight:700}
+.zct .dot{color:var(--muted)}
 .zbody{border-top:1px solid var(--line)}
 .zsec+.zsec{border-top:1px solid var(--line)}
 .zh{margin:0;padding:8px 14px 6px;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700;background:var(--sunk);display:flex;gap:8px;align-items:baseline}
@@ -199,10 +200,10 @@ kbd{font-family:var(--body);font-size:.72rem;border:1px solid var(--line);border
 .icat{font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;border-radius:4px;padding:1px 6px;background:var(--sunk);color:var(--accent)}
 .icat.c-hidden{background:var(--coin-bg);color:var(--ink)}
 .icat.c-quest{background:var(--accent);color:var(--bg)}
-.icat.c-steal{background:var(--coin);color:var(--bg)}
+.icat.c-steal{background:var(--coin-ink);color:var(--surface)}
 .ihow{font-size:.78rem!important;font-style:italic}
 .ientry.done .iinfo b{text-decoration:line-through;color:var(--done)}
-.chip.minor{opacity:.8;border-style:dashed}
+.chip.minor{border-style:dashed}
 .authbtn{font:inherit;font-size:.85rem;border:1px solid var(--accent);background:var(--accent);color:var(--bg);border-radius:8px;padding:4px 10px;cursor:pointer;margin-bottom:8px;white-space:nowrap}
 .authbtn.out{background:none;color:var(--accent)}
 .homelink{font-size:1.2rem;color:var(--muted);text-decoration:none;padding:0 4px 8px 0;line-height:1}.homelink:hover{color:var(--accent)}
@@ -239,6 +240,17 @@ kbd{font-family:var(--body);font-size:.72rem;border:1px solid var(--line);border
 @media (max-width:560px){ .frow{grid-template-columns:1fr;gap:4px} .vprog{align-items:stretch;flex-basis:100%} .sync{display:none} .brand{font-size:1.15rem} }
 @media (max-width:560px){ .npc{grid-template-columns:1fr} .mini{display:none} }
 @media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+/* pills inside list rows (".chest .cl span" would otherwise turn them grey) */
+.chest .cl .ipill{color:var(--muted)}
+.chest .cl .ipill.day{color:var(--ink)}
+.chest .cl .ipill.night{color:var(--accent)}
+.chest .cl .icat{color:var(--accent)}
+.chest .cl .icat.c-hidden{color:var(--ink)}
+.chest .cl .icat.c-quest{color:var(--bg)}
+.chest .cl .icat.c-steal{color:var(--surface)}
+.chest .cl .star{color:var(--coin-ink)}
+.chest .cl .tag{color:var(--ink)}
+.chest .cl .tag em{color:var(--muted)}
 /* filter bar: search + Filters button up top, the rest folds away */
 .filters{gap:0;padding:8px}
 .fbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -257,13 +269,14 @@ kbd{font-family:var(--body);font-size:.72rem;border:1px solid var(--line);border
 .fbody[hidden]{display:none}
 /* warnings, locks and cross-links */
 .tag.warn{border-color:var(--coin);background:var(--coin-bg);color:var(--ink)}
-.tag.warn::before{content:"! ";font-weight:700;color:var(--coin)}
+.tag.warn::before{content:"! ";font-weight:700;color:var(--coin-ink)}
 .tag.lock{border-style:dashed;color:var(--muted);background:none}
 .wtags{display:flex!important;flex-wrap:wrap;gap:4px;margin-top:4px}
 .wtags .tag{font-size:.72rem}
-details.locked{opacity:.55}
-details.locked[open]{opacity:.8}
-details.locked:hover,details.locked:focus-within{opacity:1}
+/* not reached yet: faded look without fading the text below readable contrast */
+details.locked{background:var(--bg);border-style:dashed}
+details.locked>summary .tn{color:var(--muted)}
+details.locked .tag:not(.lock){filter:saturate(.3)}
 .xl{font:inherit;background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;cursor:pointer;text-align:left}
 .xl:hover{text-decoration-thickness:2px}
 .zlinks{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;padding:8px 14px;border-bottom:1px solid var(--line);font-size:.9rem}
@@ -291,7 +304,7 @@ details.locked:hover,details.locked:focus-within{opacity:1}
 .ovl-note{margin:0;font-size:.88rem;color:var(--muted)}
 .nowlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .nowlist li{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.nowlist li b{font-variant-numeric:tabular-nums;min-width:2.2em;text-align:right;color:var(--coin);font-size:1.05rem}
+.nowlist li b{font-variant-numeric:tabular-nums;min-width:2.2em;text-align:right;color:var(--coin-ink);font-size:1.05rem}
 .nowlist li .reset{margin-left:auto}
 .reset:disabled{opacity:.5;cursor:default}
 .reset.pri{background:var(--accent);border-color:var(--accent);color:var(--bg)}
@@ -312,6 +325,8 @@ details.locked:hover,details.locked:focus-within{opacity:1}
 .credits ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
 .credits a{color:var(--accent)}
 .creditsbtn{font-size:.88rem!important;color:var(--muted)}
+.themebtn{display:flex!important;align-items:center;gap:8px;font-size:.88rem!important}
+.themebtn .ti{width:1.1em;text-align:center;font-family:"Segoe UI Symbol","Apple Symbols",system-ui,sans-serif}
 .keys{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;margin:0;align-items:baseline}
 .keys dt{white-space:nowrap}
 .keys dd{margin:0;color:var(--muted)}
@@ -345,6 +360,7 @@ details.locked:hover,details.locked:focus-within{opacity:1}
   .zhn{display:none}
 }
 </style>
+<script>try{var t=localStorage.getItem("rumgames-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 
 <header class="appbar">
   <div class="appbar-in">
@@ -416,6 +432,7 @@ details.locked:hover,details.locked:focus-within{opacity:1}
         <dt><kbd>F</kbd></dt><dd>Show or hide the filters</dd>
         <dt><kbd>P</kbd></dt><dd>Open My progress</dd>
         <dt><kbd>U</kbd></dt><dd>Undo the last tick</dd>
+        <dt><kbd>T</kbd></dt><dd>Switch theme: automatic, light or dark</dd>
         <dt><kbd>?</kbd></dt><dd>This list</dd>
         <dt><kbd>Esc</kbd></dt><dd>Close whatever is open</dd>
       </dl>
@@ -490,6 +507,7 @@ details.locked:hover,details.locked:focus-within{opacity:1}
     <div class="mebox">
       <span class="sidelabel">My game</span>
       <button type="button" class="tab mebtn" id="meBtn" aria-haspopup="dialog"><b>My progress</b><span id="meSum">Set your story chapters</span></button>
+      <button type="button" class="tab themebtn" id="themeBtn" title="Switch between automatic, light and dark (T)"><span class="ti" aria-hidden="true">◐</span><span class="tl">Theme: Auto</span></button>
       <button type="button" class="tab helpbtn" id="helpBtn" aria-haspopup="dialog">Shortcuts <kbd>?</kbd></button>
       <button type="button" class="tab creditsbtn" id="creditsBtn" aria-haspopup="dialog">Credits &amp; sources</button>
     </div>
@@ -1660,6 +1678,23 @@ document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click
 $("#meBtn").addEventListener("click", () => { renderProg(); renderMe(); ovlOpen("me"); });
 $("#helpBtn").addEventListener("click", () => ovlOpen("help"));
 $("#creditsBtn").addEventListener("click", () => ovlOpen("credits"));
+// ---- theme: automatic (follows the device), light or dark; shared with the home page
+const THEMES = { auto: ["◐", "Auto"], light: ["☀", "Light"], dark: ["☾", "Dark"] };
+let theme = "auto";
+try { const t = localStorage.getItem("rumgames-theme"); if (t === "light" || t === "dark") theme = t; } catch (e) {}
+function applyTheme() {
+  if (theme === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", theme);
+  const [icon, name] = THEMES[theme];
+  $("#themeBtn .ti").textContent = icon; $("#themeBtn .tl").textContent = `Theme: ${name}`;
+  $("#themeBtn").setAttribute("aria-label", `Theme: ${name}. Click to change`);
+}
+function cycleTheme() {
+  theme = theme === "auto" ? "light" : theme === "light" ? "dark" : "auto";
+  try { theme === "auto" ? localStorage.removeItem("rumgames-theme") : localStorage.setItem("rumgames-theme", theme); } catch (e) {}
+  applyTheme(); showToast(`Theme: ${THEMES[theme][1]}${theme === "auto" ? " (follows your device)" : ""}`, false);
+}
+$("#themeBtn").addEventListener("click", cycleTheme);
+applyTheme();
 document.addEventListener("click", e => { if (e.target.closest("[data-credits]")) { e.preventDefault(); ovlOpen("credits"); } });
 document.querySelectorAll(".modk").forEach(k => { k.textContent = isMac ? "⌘" : "Ctrl"; });
 
@@ -1978,6 +2013,7 @@ document.addEventListener("keydown", e => {
   if (k === "f") { e.preventDefault(); setFP(cur, !fpOpen[cur]); return; }
   if (k === "p") { e.preventDefault(); renderProg(); renderMe(); ovlOpen("me"); return; }
   if (k === "u") { e.preventDefault(); undo(); return; }
+  if (k === "t") { e.preventDefault(); cycleTheme(); return; }
 });
 </script>
 

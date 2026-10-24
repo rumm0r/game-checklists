@@ -17,9 +17,12 @@
   color-scheme:light;
   padding-top:env(safe-area-inset-top); padding-bottom:env(safe-area-inset-bottom);
 }
-@media (prefers-color-scheme: dark){ :root{
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#0e1120; --surface:#161a2d; --sunk:#1d2238; --ink:#e7e9f2; --muted:#9aa1b8;
   --line:#2b3150; --accent:#9db4ff; --coin:#e3b54a; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0e1120; --surface:#161a2d; --sunk:#1d2238; --ink:#e7e9f2; --muted:#9aa1b8;
+  --line:#2b3150; --accent:#9db4ff; --coin:#e3b54a; color-scheme:dark }
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45}
 .wrap{max-width:880px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:48px 64px}
 h1{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,7vw,3.2rem);line-height:1.05;margin:0;text-wrap:balance}
@@ -45,11 +48,17 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,7vw,3.2rem)
 .foot{margin-top:36px;color:var(--muted);font-size:.85rem;max-width:60ch}
 .foot a{color:inherit}
 @media (prefers-reduced-motion:reduce){ .game a{transition:none} .game a:hover{transform:none} }
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.themebtn{font:inherit;font-size:.85rem;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:5px 12px;cursor:pointer;white-space:nowrap;flex:none;margin-top:8px}
+.themebtn:hover{border-color:var(--accent)}
+.themebtn .ti{font-family:"Segoe UI Symbol","Apple Symbols",system-ui,sans-serif}
+.themebtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </style>
+<script>try{var t=localStorage.getItem("rumgames-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
 <div class="wrap">
-  <h1>Game Stuff</h1>
+  <div class="top"><h1>Game Stuff</h1><button type="button" class="themebtn" id="themeBtn"><span class="ti" aria-hidden="true">◐</span><span class="tl">Auto</span></button></div>
   <p class="lead">A home for the things I make while playing through a game: checklists, guides and anything else that comes in handy along the way. New games show up here as I play them.</p>
   <ul class="games">
     <li class="game">
@@ -73,5 +82,24 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,7vw,3.2rem)
   <p class="foot">Progress is stored separately for each game, in each browser you use.</p>
   <p class="foot legal">A fan-made project, not affiliated with Square Enix. Octopath Traveler II artwork from the <a href="https://www.square-enix-games.com/en_US/games/octopath-traveler-ii" target="_blank" rel="noopener">official website</a>, © 2023 SQUARE ENIX CO., LTD. All Rights Reserved.</p>
 </div>
+<script>
+// theme: automatic (follows the device), light or dark; shared with the checklists
+(function () {
+  var NAMES = { auto: ["◐", "Auto"], light: ["☀", "Light"], dark: ["☾", "Dark"] }, theme = "auto", btn = document.getElementById("themeBtn");
+  try { var t = localStorage.getItem("rumgames-theme"); if (t === "light" || t === "dark") theme = t; } catch (e) {}
+  function apply() {
+    if (theme === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", theme);
+    btn.querySelector(".ti").textContent = NAMES[theme][0]; btn.querySelector(".tl").textContent = NAMES[theme][1];
+    btn.setAttribute("aria-label", "Theme: " + NAMES[theme][1] + ". Click to change");
+    btn.title = theme === "auto" ? "Theme follows your device. Click for light" : theme === "light" ? "Light theme. Click for dark" : "Dark theme. Click for automatic";
+  }
+  btn.addEventListener("click", function () {
+    theme = theme === "auto" ? "light" : theme === "light" ? "dark" : "auto";
+    try { theme === "auto" ? localStorage.removeItem("rumgames-theme") : localStorage.setItem("rumgames-theme", theme); } catch (e) {}
+    apply();
+  });
+  apply();
+})();
+</script>
 </body>
 </html>
