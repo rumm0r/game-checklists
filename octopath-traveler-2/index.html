@@ -141,6 +141,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 /* jump palette */
 .jumpbtn{font:inherit;font-size:.85rem;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--bg);color:var(--muted);border-radius:8px;padding:4px 8px 4px 10px;cursor:pointer;margin-bottom:8px;margin-left:auto}
 .jumpbtn:hover{color:var(--ink);border-color:var(--accent)}
+.jumpbtn.savetop{margin-left:0}
+.savetop span{font-size:.95rem;line-height:1}
+@media (max-width:560px){ #jumpKey{display:none} .savetop .lg{display:none} .savetop{margin-left:0} .jumpbtn{margin-left:auto} .appbar-in{column-gap:8px} .jumpbtn{padding-inline:8px} }
 kbd{font-family:var(--body);font-size:.72rem;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--surface);color:var(--muted);white-space:nowrap}
 .pal{position:fixed;inset:0;z-index:50;background:rgba(10,12,24,.45);display:flex;justify-content:center;align-items:flex-start;padding:max(10vh,calc(env(safe-area-inset-top,0px) + 16px)) max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
 .pal[hidden]{display:none}
@@ -345,6 +348,7 @@ details.locked:hover,details.locked:focus-within{opacity:1}
     <a class="homelink" href="../" title="All checklists" aria-label="All checklists">←</a>
     <h1 class="brand">Octopath Traveler 2</h1>
     <button type="button" class="jumpbtn" id="jumpBtn" aria-keyshortcuts="Control+K Meta+K /">Jump to… <kbd id="jumpKey">Ctrl K</kbd></button>
+    <button type="button" class="jumpbtn savetop" id="saveTopBtn" aria-label="Import save" title="Tick what you've done from your Octopath Traveler II save file"><span aria-hidden="true">⤒</span> Import<span class="lg"> save</span></button>
     <span class="sync" id="sync">Saved in this browser</span>
     <button type="button" class="authbtn" id="authBtn" hidden>Sign in to sync</button>
   </div>
@@ -1888,7 +1892,13 @@ $("#saveBox").addEventListener("click", e => {
   });
   renderAll();
 });
-if (!SAVEMAP) { const s = $("#saveSec"); if (s) s.hidden = true; }
+if (!SAVEMAP) { const s = $("#saveSec"); if (s) s.hidden = true; $("#saveTopBtn").hidden = true; }
+// top-bar shortcut: open My progress at the save section and go straight to the file picker
+$("#saveTopBtn").addEventListener("click", () => {
+  renderProg(); renderMe(); ovlOpen("me");
+  $("#saveSec").scrollIntoView({ block: "start" });
+  $("#saveFile").click();
+});
 
 // ================= Keyboard
 document.addEventListener("keydown", e => {
