@@ -23,7 +23,7 @@
 :root[data-theme="dark"]{
   --bg:#0e1120; --surface:#161a2d; --sunk:#1d2238; --ink:#e7e9f2; --muted:#9aa1b8;
   --line:#2b3150; --accent:#9db4ff; --coin:#e3b54a; color-scheme:dark }
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45}
+body{margin:0;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45}
 .wrap{max-width:880px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:48px 64px}
 h1{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,7vw,3.2rem);line-height:1.05;margin:0;text-wrap:balance}
 .lead{color:var(--muted);margin:.5rem 0 0;max-width:60ch}
@@ -44,8 +44,10 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,7vw,3.2rem)
 .game .go{color:var(--accent);font-weight:700;font-size:.9rem}
 [hidden]{display:none!important}
 .game.soon a{border-style:dashed;pointer-events:none;opacity:.7}
-.foot.legal{margin-top:8px;font-size:.78rem}
-.foot{margin-top:36px;color:var(--muted);font-size:.85rem;max-width:60ch}
+.wrap{width:100%;box-sizing:border-box}
+.sitefoot{margin-top:auto;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px));text-align:center;border-top:1px solid var(--line)}
+.foot{margin:0 auto;color:var(--muted);font-size:.85rem;max-width:60ch}
+.foot.legal{margin-top:6px;font-size:.78rem}
 .foot a{color:inherit}
 @media (prefers-reduced-motion:reduce){ .game a{transition:none} .game a:hover{transform:none} }
 .top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
@@ -79,9 +81,11 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,7vw,3.2rem)
       </a>
     </li>
   </ul>
+</div>
+<footer class="sitefoot">
   <p class="foot">Progress is stored separately for each game, in each browser you use.</p>
   <p class="foot legal">A fan-made project, not affiliated with Square Enix. Octopath Traveler II artwork from the <a href="https://www.square-enix-games.com/en_US/games/octopath-traveler-ii" target="_blank" rel="noopener">official website</a>, © 2023 SQUARE ENIX CO., LTD. All Rights Reserved.</p>
-</div>
+</footer>
 <script>
 // theme: automatic (follows the device), light or dark; shared with the checklists
 (function () {
