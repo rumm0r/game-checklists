@@ -300,6 +300,11 @@ details.locked:hover,details.locked:focus-within{opacity:1}
 .impbox p{margin:0 0 8px}
 .savefound{margin:0 0 8px;padding-left:1.2em}
 .savefound .muted{color:var(--muted)}
+.savewarn{border-left:3px solid var(--coin);background:var(--coin-bg);border-radius:6px;padding:8px 12px;margin:0 0 8px}
+.savewarn p{margin:0 0 6px}.savewarn p:last-child{margin-bottom:0}
+.savewarn ul{margin:0 0 6px;padding-left:1.2em}
+.savewarn .muted{color:var(--muted)}
+.reset.warnbtn{border-color:var(--coin);color:var(--ink);font-weight:700}
 .ovl-note code{font-size:.82rem;word-break:break-all}
 .keys{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;margin:0;align-items:baseline}
 .keys dt{white-space:nowrap}
@@ -1794,6 +1799,64 @@ function saveFindings(d) {
   return found;
 }
 let pendingSave = null;
+// Names for things, so a warning can say exactly what would be unticked
+function keyLabel(kind, k) {
+  try {
+    if (kind === "done") { const [ri, ti, ni, ii] = k.split(".").map(Number); const t = DATA[ri].towns[ti], n = t.npcs[ni]; return `${n.i[ii]} (${n.n}, ${t.name})`; }
+    if (kind === "tdone") { const [ri, ai, ci] = k.split(".").map(Number); const a = TREASURE[ri].areas[ai]; return `${a.c[ci].l} chest (${a.name})`; }
+    if (kind === "idone") { const x = IALL.find(y => y.key === k); return x ? `${x.e.i} (${x.e.n}, ${x.t.name})` : k; }
+    if (kind === "qdone") return k;
+  } catch (e) {}
+  return k;
+}
+// Compare the save with the current ticks: what it adds, and which of my ticks it disagrees with
+function saveCompare(fd) {
+  const M = SAVEMAP;
+  const known = { done: Object.keys(M.s), tdone: Object.keys(M.c), idone: Object.keys(M.i), qdone: Object.keys(M.q) };
+  const have = { done, tdone, idone, qdone };
+  const add = {}, drop = {};
+  for (const kind of Object.keys(known)) {
+    add[kind] = [...fd[kind]].filter(k => !have[kind].has(k));
+    // only things the save can actually see; everything else is left alone
+    drop[kind] = known[kind].filter(k => have[kind].has(k) && !fd[kind].has(k));
+  }
+  const chUp = Object.entries(fd.story).filter(([c, v]) => v > (Number(story[c]) || 0));
+  const chDown = Object.entries(fd.story).filter(([c, v]) => storySet() && (Number(story[c]) || 0) > v);
+  return { add, drop, chUp, chDown,
+    addN: Object.values(add).reduce((n, l) => n + l.length, 0) + chUp.length,
+    dropN: Object.values(drop).reduce((n, l) => n + l.length, 0) + chDown.length };
+}
+function renderSaveBox() {
+  const p = pendingSave, box = $("#saveBox"); if (!p) return;
+  const { fd, cmp } = p;
+  const line = (lbl1, lbl, set, kind) => `<li><b>${set.size}</b> ${set.size === 1 ? lbl1 : lbl}${set.size ? ` <span class="muted">(${cmp.add[kind].length} not ticked yet)</span>` : ""}</li>`;
+  const found = `<p>Your save shows:</p><ul class="savefound">
+    ${line("chest opened", "chests opened", fd.tdone, "tdone")}
+    ${line("item stolen or bought", "items stolen or bought", fd.done, "done")}
+    ${line("side story finished", "side stories finished", fd.qdone, "qdone")}
+    ${line("person questioned for info", "people questioned for info", fd.idone, "idone")}
+    <li>Chapters: ${Object.entries(fd.story).filter(([, v]) => v).map(([c, v]) => `${esc(c)} Ch ${v}`).join(", ") || "none finished yet"}</li></ul>`;
+  if (p.step === "confirm") {
+    const ex = [];
+    for (const kind of ["qdone", "tdone", "done", "idone"]) for (const k of cmp.drop[kind]) { if (ex.length < 6) ex.push(keyLabel(kind, k)); }
+    cmp.chDown.forEach(([c, v]) => { if (ex.length < 6) ex.push(`${c} back to ${v ? "Ch " + v : "Ch 1"}`); });
+    box.innerHTML = `<div class="savewarn"><p><b>Untick ${cmp.dropN} thing${cmp.dropN === 1 ? "" : "s"} you ticked yourself?</b> Your save says ${cmp.dropN === 1 ? "it isn't" : "they aren't"} done yet:</p>
+      <ul>${ex.map(x => `<li>${esc(x)}</li>`).join("")}${cmp.dropN > ex.length ? `<li class="muted">and ${cmp.dropN - ex.length} more</li>` : ""}</ul>
+      <p class="ovl-note">Things the save can't track, like hidden items you picked up, stay as they are. You can undo this right after.</p></div>
+      <div class="btnrow"><button type="button" class="reset warnbtn" data-save="match">Yes, match my save</button><button type="button" class="reset" data-save="back">Back</button></div>`;
+    box.querySelector('[data-save="back"]').focus();
+    return;
+  }
+  let actions;
+  if (cmp.dropN) {
+    actions = `<div class="savewarn"><p><b>Heads up:</b> ${cmp.dropN} of your ticks ${cmp.dropN === 1 ? "isn't" : "aren't"} in this save. They may be from a different save file or ticked by mistake. ${cmp.addN ? "<b>Add from save</b> keeps them" : "Nothing new to add, so <b>Cancel</b> keeps them as they are"}. <b>Match my save</b> unticks them.</p></div>
+      <div class="btnrow">${cmp.addN ? `<button type="button" class="reset pri" data-save="add">Add from save (keep my ticks)</button>` : ""}<button type="button" class="reset" data-save="ask">Match my save…</button><button type="button" class="reset" data-save="no">Cancel</button></div>`;
+  } else if (cmp.addN) {
+    actions = `<div class="btnrow"><button type="button" class="reset pri" data-save="add">Tick ${cmp.addN} thing${cmp.addN === 1 ? "" : "s"}</button><button type="button" class="reset" data-save="no">Cancel</button></div>
+      <p class="ovl-note">Your own ticks all agree with this save, so nothing gets unticked.</p>`;
+  } else actions = `<p>Your checklist already matches this save.</p>`;
+  box.innerHTML = found + actions + `<p class="ovl-note">A hidden item counts as done once you've learned about it from the person, since the save doesn't say whether you picked it up.</p>`;
+}
 $("#saveFile").addEventListener("change", async e => {
   const f = e.target.files?.[0]; e.target.value = ""; if (!f) return;
   const box = $("#saveBox"); box.hidden = false; box.innerHTML = `<p>Reading ${esc(f.name)}…</p>`;
@@ -1801,29 +1864,27 @@ $("#saveFile").addEventListener("change", async e => {
     const d = readGvas(await f.arrayBuffer());
     if (!d.MapData && !d.NPCEventList) throw new Error("no progress inside");
     const fd = saveFindings(d);
-    const newCount = (set, have) => [...set].filter(k => !have.has(k)).length;
-    const n = { c: [fd.tdone.size, newCount(fd.tdone, tdone)], s: [fd.done.size, newCount(fd.done, done)], q: [fd.qdone.size, newCount(fd.qdone, qdone)], i: [fd.idone.size, newCount(fd.idone, idone)] };
-    const chUp = Object.entries(fd.story).filter(([c, v]) => v > (Number(story[c]) || 0));
-    pendingSave = fd;
-    const line = (lbl, [all, nw]) => `<li><b>${all}</b> ${lbl}${all ? ` <span class="muted">(${nw} not ticked yet)</span>` : ""}</li>`;
-    const any = n.c[1] + n.s[1] + n.q[1] + n.i[1] + chUp.length;
-    box.innerHTML = `<p>Your save shows:</p><ul class="savefound">${line(n.c[0] === 1 ? "chest opened" : "chests opened", n.c)}${line(n.s[0] === 1 ? "item stolen or bought" : "items stolen or bought", n.s)}${line(n.q[0] === 1 ? "side story finished" : "side stories finished", n.q)}${M_INFO_LINE(n)}${chUp.length ? `<li>Chapters: ${chUp.map(([c, v]) => `${esc(c)} Ch ${v}`).join(", ")}</li>` : ""}</ul>
-      ${any ? `<div class="btnrow"><button type="button" class="reset pri" data-save="add">Tick these</button><button type="button" class="reset" data-save="no">Cancel</button></div>` : `<p>Everything in it is already ticked.</p>`}
-      <p class="ovl-note">This only adds ticks; nothing gets unticked. A hidden item is ticked once you've learned about it from the person, since the save doesn't say whether you picked it up.</p>`;
+    pendingSave = { fd, cmp: saveCompare(fd), step: "summary" };
+    renderSaveBox();
   } catch (err) {
     pendingSave = null;
     box.innerHTML = `<p>That doesn't look like an Octopath Traveler II save. Pick a file named like <b>SaveData1.sav</b>.</p>`;
   }
 });
-function M_INFO_LINE(n) { return `<li><b>${n.i[0]}</b> ${n.i[0] === 1 ? "person" : "people"} questioned for info${n.i[0] ? ` <span class="muted">(${n.i[1]} not ticked yet)</span>` : ""}</li>`; }
 $("#saveBox").addEventListener("click", e => {
-  const b = e.target.closest("button[data-save]"); if (!b) return;
-  const fd = pendingSave; pendingSave = null; $("#saveBox").hidden = true;
-  if (!fd || b.dataset.save !== "add") return;
-  change("Filled in from your save", () => {
-    fd.done.forEach(k => done.add(k)); fd.tdone.forEach(k => tdone.add(k)); fd.idone.forEach(k => idone.add(k)); fd.qdone.forEach(k => qdone.add(k));
-    for (const [c, v] of Object.entries(fd.story)) story[c] = Math.max(Number(story[c]) || 0, v);
-    if (Object.keys(fd.story).length) TRAVELERS.forEach(([t]) => { if (!(t in story)) story[t] = 0; });
+  const b = e.target.closest("button[data-save]"); if (!b || !pendingSave) return;
+  const act = b.dataset.save, { fd, cmp } = pendingSave;
+  if (act === "ask") { pendingSave.step = "confirm"; renderSaveBox(); return; }
+  if (act === "back") { pendingSave.step = "summary"; renderSaveBox(); return; }
+  pendingSave = null; $("#saveBox").hidden = true;
+  if (act !== "add" && act !== "match") return;
+  const sets = () => ({ done, tdone, idone, qdone });
+  change(act === "match" ? `Matched your save (${cmp.dropN} unticked)` : "Added ticks from your save", () => {
+    const S = sets();
+    for (const kind of Object.keys(cmp.add)) cmp.add[kind].forEach(k => S[kind].add(k));
+    if (act === "match") for (const kind of Object.keys(cmp.drop)) cmp.drop[kind].forEach(k => S[kind].delete(k));
+    for (const [c, v] of Object.entries(fd.story)) story[c] = act === "match" ? v : Math.max(Number(story[c]) || 0, v);
+    TRAVELERS.forEach(([t]) => { if (!(t in story)) story[t] = 0; });
   });
   renderAll();
 });
