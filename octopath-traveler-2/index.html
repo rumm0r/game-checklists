@@ -200,6 +200,8 @@ kbd{font-family:var(--body);font-size:.72rem;border:1px solid var(--line);border
 .ihow{font-size:.78rem!important;font-style:italic}
 .ientry.done .iinfo b{text-decoration:line-through;color:var(--done)}
 .chip.minor{opacity:.8;border-style:dashed}
+.authbtn{font:inherit;font-size:.85rem;border:1px solid var(--accent);background:var(--accent);color:var(--bg);border-radius:8px;padding:4px 10px;cursor:pointer;margin-bottom:8px;white-space:nowrap}
+.authbtn.out{background:none;color:var(--accent)}
 .homelink{font-size:1.2rem;color:var(--muted);text-decoration:none;padding:0 4px 8px 0;line-height:1}.homelink:hover{color:var(--accent)}
 /* view header */
 .vhead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px 24px;flex-wrap:wrap}
@@ -336,6 +338,7 @@ details.locked:hover,details.locked:focus-within{opacity:1}
     <h1 class="brand">Octopath Traveler 2</h1>
     <button type="button" class="jumpbtn" id="jumpBtn" aria-keyshortcuts="Control+K Meta+K /">Jump to… <kbd id="jumpKey">Ctrl K</kbd></button>
     <span class="sync" id="sync">Saved in this browser</span>
+    <button type="button" class="authbtn" id="authBtn" hidden>Sign in to sync</button>
   </div>
 </header>
 
@@ -579,7 +582,10 @@ try { idone = new Set(JSON.parse(localStorage.getItem(LS + "-info") || "[]")); }
 try { tdone = new Set(JSON.parse(localStorage.getItem(LS + "-treasure") || "[]")); } catch (e) {}
 try { qdone = new Set(JSON.parse(localStorage.getItem(LS + "-quests") || "[]")); } catch (e) {}
 try { story = JSON.parse(localStorage.getItem(LS + "-story") || "{}") || {}; } catch (e) {}
-let progressDoc = null, writing = false, pending = false, timer = null;
+let writing = false, pending = false, timer = null;
+// Places progress syncs to besides this browser: the Claude account here, or a signed-in cloud account on the website.
+// Each is { write(payload): Promise, ok: "status text" }.
+const REMOTES = [];
 function saveLocal() {
   try {
     localStorage.setItem(LS, JSON.stringify([...done]));
@@ -590,17 +596,36 @@ function saveLocal() {
   } catch (e) {}
 }
 function setSync(t) { const el = $("#sync"); if (el) el.textContent = t; }
+const progressPayload = () => ({ done: [...done], quests: [...qdone], treasure: [...tdone], info: [...idone], story, updated: new Date().toISOString() });
 async function flush() {
-  if (!progressDoc) return;
+  if (!REMOTES.length) return;
   if (writing) { pending = true; return; }
   writing = true;
-  try { await progressDoc.set({ done: [...done], quests: [...qdone], treasure: [...tdone], info: [...idone], story, updated: new Date().toISOString() }); setSync("Saved to your account"); }
-  catch (e) { setSync("Saved in this browser (account sync failed)"); }
+  const p = progressPayload();
+  for (const r of REMOTES) {
+    try { await r.write(p); setSync(r.ok); } catch (e) { setSync("Saved in this browser (sync failed)"); }
+  }
   writing = false;
   if (pending) { pending = false; flush(); }
 }
 function save() { saveLocal(); clearTimeout(timer); timer = setTimeout(flush, 700); }
+// Combine saved progress from elsewhere with this browser's (nothing ticked anywhere is lost).
+// Returns true when the other copy is missing something this browser has, so it should be written back.
+function mergeIn(d) {
+  d = d || {};
+  const arr = v => Array.isArray(v) ? v : [];
+  const rDone = arr(d.done), rQ = arr(d.quests), rT = arr(d.treasure), rI = arr(d.info);
+  const rStory = (d.story && typeof d.story === "object") ? d.story : {};
+  const mDone = new Set([...rDone, ...done]), mQ = new Set([...rQ, ...qdone]), mT = new Set([...rT, ...tdone]), mI = new Set([...rI, ...idone]);
+  const mStory = { ...rStory };
+  for (const [k, v] of Object.entries(story)) mStory[k] = Math.max(Number(v) || 0, Number(mStory[k]) || 0);
+  const changed = mDone.size !== rDone.length || mQ.size !== rQ.length || mT.size !== rT.length || mI.size !== rI.length || JSON.stringify(mStory) !== JSON.stringify(rStory);
+  done = mDone; qdone = mQ; tdone = mT; idone = mI; story = mStory; saveLocal(); renderAll();
+  return changed;
+}
+const hasLocalProgress = () => done.size || qdone.size || tdone.size || idone.size || Object.keys(story).length;
 
+// Claude account (only inside Claude)
 (async () => {
   try {
     if (!window.claude?.use) return;
@@ -608,26 +633,14 @@ function save() { saveLocal(); clearTimeout(timer); timer = setTimeout(flush, 70
     if (!db || !user) return;
     const id = await user.id();
     if (!id) return;
-    progressDoc = db.doc(`data/users/${id}/progress`);
-    const snap = await progressDoc.get();
-    if (snap.exists) {
-      const d = snap.data() || {};
-      const rDone = Array.isArray(d.done) ? d.done : [];
-      const rQ = Array.isArray(d.quests) ? d.quests : [];
-      const rT = Array.isArray(d.treasure) ? d.treasure : [];
-      const rI = Array.isArray(d.info) ? d.info : [];
-      const rStory = (d.story && typeof d.story === "object") ? d.story : {};
-      const mDone = new Set([...rDone, ...done]), mQ = new Set([...rQ, ...qdone]), mT = new Set([...rT, ...tdone]), mI = new Set([...rI, ...idone]);
-      const mStory = { ...rStory };
-      for (const [k, v] of Object.entries(story)) mStory[k] = Math.max(Number(v) || 0, Number(mStory[k]) || 0);
-      const changed = mDone.size !== rDone.length || mQ.size !== rQ.length || mT.size !== rT.length || mI.size !== rI.length || JSON.stringify(mStory) !== JSON.stringify(rStory);
-      done = mDone; qdone = mQ; tdone = mT; idone = mI; story = mStory; saveLocal(); renderAll();
-      if (changed) flush(); else setSync("Saved to your account");
-    } else if (done.size || qdone.size || tdone.size || idone.size || Object.keys(story).length) { flush(); }
-    else { setSync("Saves to your account"); }
+    const doc = db.doc(`data/users/${id}/progress`);
+    const snap = await doc.get();
+    REMOTES.push({ write: p => doc.set(p), ok: "Saved to your account" });
+    if (snap.exists) { if (mergeIn(snap.data())) flush(); else setSync("Saved to your account"); }
+    else if (hasLocalProgress()) flush();
+    else setSync("Saves to your account");
   } catch (e) { /* stay on browser storage */ }
 })();
-
 
 // ================= Shared: story reach, undo, warning tags, cross-links
 let reach = "dim";
@@ -1696,6 +1709,56 @@ document.addEventListener("keydown", e => {
   if (k === "p") { e.preventDefault(); renderProg(); renderMe(); ovlOpen("me"); return; }
   if (k === "u") { e.preventDefault(); undo(); return; }
 });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script>
+// Website only: sign in with Discord through Supabase so progress follows you between devices.
+(() => {
+  const SB_URL = "https://uzlpapycceulvwlsscyg.supabase.co", SB_KEY = "sb_publishable_IiOnVGrpdH5GNmwIujj7SA_NDCK_s2P", GAME = "octopath-traveler-2";
+  const btn = document.getElementById("authBtn");
+  if (!window.supabase || !btn) return;
+  const sb = supabase.createClient(SB_URL, SB_KEY, { auth: { flowType: "pkce", detectSessionInUrl: true, persistSession: true } });
+  let remote = null, uid = null;
+  const nameOf = u => (u.user_metadata && (u.user_metadata.custom_claims?.global_name || u.user_metadata.full_name || u.user_metadata.name)) || "you";
+  function signedOut() {
+    uid = null;
+    if (remote) { const i = REMOTES.indexOf(remote); if (i >= 0) REMOTES.splice(i, 1); remote = null; }
+    btn.hidden = false; btn.classList.remove("out"); btn.textContent = "Sign in to sync";
+    btn.title = "Sign in with Discord to keep your ticks on every device";
+    setSync("Saved in this browser");
+  }
+  async function signedIn(session) {
+    const u = session.user;
+    if (uid === u.id) return;
+    uid = u.id;
+    btn.hidden = false; btn.classList.add("out"); btn.textContent = "Sign out"; btn.title = `Signed in with Discord as ${nameOf(u)}`;
+    setSync("Loading your saved progress…");
+    const { data, error } = await sb.from("progress").select("data").eq("user_id", uid).eq("game", GAME).maybeSingle();
+    if (error) { setSync("Saved in this browser (couldn't reach your account)"); return; }
+    remote = {
+      ok: `Synced · ${nameOf(u)}`,
+      write: async p => {
+        const { error } = await sb.from("progress").upsert({ user_id: uid, game: GAME, data: p, updated_at: p.updated }, { onConflict: "user_id,game" });
+        if (error) throw error;
+      },
+    };
+    REMOTES.push(remote);
+    if (data) { if (mergeIn(data.data)) flush(); else setSync(remote.ok); }
+    else if (hasLocalProgress()) flush();
+    else setSync(remote.ok);
+  }
+  sb.auth.onAuthStateChange((event, session) => {
+    // run outside the auth callback, as Supabase recommends
+    setTimeout(() => { if (session) signedIn(session); else signedOut(); }, 0);
+  });
+  btn.addEventListener("click", async () => {
+    if (uid) { await sb.auth.signOut(); signedOut(); return; }
+    btn.disabled = true; btn.textContent = "Opening Discord…";
+    const { error } = await sb.auth.signInWithOAuth({ provider: "discord", options: { redirectTo: location.origin + location.pathname } });
+    if (error) { btn.disabled = false; btn.textContent = "Sign in to sync"; setSync("Couldn't start sign-in"); }
+  });
+})();
 </script>
 
 </body>
