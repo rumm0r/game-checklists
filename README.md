@@ -1,8 +1,8 @@
-# 🎮 Game Checklists
+# 🎮 Game Stuff
 
 > 🚧 **Work in progress!** This is a hobby project that grows as I play. Expect new features, the odd rough edge, and more games over time.
 
-Hi! 👋 This is my little collection of checklists for the games I'm playing, so I never miss a chest, a steal or a side quest again.
+Hi! 👋 This is where I put the things I make while playing through a game: checklists, guides and anything else that comes in handy along the way, so I never miss a chest, a steal or a side quest again.
 
 **Play along at [rumgames.pages.dev](https://rumgames.pages.dev)**
 
