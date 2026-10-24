@@ -317,6 +317,10 @@ details.locked .tag:not(.lock){filter:saturate(.3)}
 .impbox p{margin:0 0 8px}
 .savefound{margin:0 0 8px;padding-left:1.2em}
 .savefound .muted{color:var(--muted)}
+.quickbox{border:1px solid var(--accent);border-radius:8px;padding:8px 12px;background:var(--sunk);font-size:.9rem}
+.quickbox p{margin:0 0 8px}
+.quickbox code{font-size:.85rem}
+.savewarn.remember{margin:8px 0}
 .savewarn{border-left:3px solid var(--coin);background:var(--coin-bg);border-radius:6px;padding:8px 12px;margin:0 0 8px}
 .savewarn p{margin:0 0 6px}.savewarn p:last-child{margin-bottom:0}
 .savewarn ul{margin:0 0 6px;padding-left:1.2em}
@@ -447,7 +451,9 @@ details.town{scroll-margin-top:calc(var(--abh,56px) + 12px)}
         <h3>Fill in from my save</h3>
         <p class="ovl-note">Pick your Octopath Traveler II save file and the checklist ticks what you've already done. The file is read right here in your browser and never uploaded anywhere. Your save itself isn't changed.</p>
         <p class="ovl-note">On Steam it's in <code>Documents\My Games\Octopath_Traveler2\Steam\&lt;number&gt;\SaveGames</code>, named like <b>SaveData1.sav</b> (the number is the save slot).</p>
-        <div class="btnrow"><label class="reset pri filebtn">Choose save file<input type="file" id="saveFile" accept=".sav"></label></div>
+        <div class="quickbox" id="quickBox" hidden></div>
+        <div id="rememberBox"></div>
+        <div class="btnrow"><button type="button" class="reset pri" id="savePickBtn" hidden>Choose save file</button><label class="reset pri filebtn" id="saveFileLbl">Choose save file<input type="file" id="saveFile" accept=".sav"></label></div>
         <div id="saveBox" class="impbox" hidden></div>
       </div>
       <div class="ovl-sec">
@@ -2239,43 +2245,147 @@ function renderSaveBox() {
   } else actions = `<p>Your checklist already matches this save.</p>`;
   box.innerHTML = found + actions + `<p class="ovl-note">A hidden item counts as done once you've learned about it from the person, since the save doesn't say whether you picked it up.</p>`;
 }
-$("#saveFile").addEventListener("change", async e => {
-  const f = e.target.files?.[0]; e.target.value = ""; if (!f) return;
+// Read a save (from the file picker or a remembered file) and show what it would change
+async function readSaveFile(f, opts = {}) {
   const box = $("#saveBox"); box.hidden = false; box.innerHTML = `<p>Reading ${esc(f.name)}…</p>`;
   try {
     const d = readGvas(await f.arrayBuffer());
     if (!d.MapData && !d.NPCEventList) throw new Error("no progress inside");
     const fd = saveFindings(d);
-    pendingSave = { fd, cmp: saveCompare(fd), step: "summary" };
+    const cmp = saveCompare(fd);
+    // quick update: nothing of yours would be unticked, so just add the new ticks (Undo is there if needed)
+    if (opts.quick && !cmp.dropN) {
+      box.hidden = true; pendingSave = null;
+      if (!cmp.addN) { showToast(`Already up to date with ${f.name}`, false); return true; }
+      applySave(fd, cmp, "add", `Updated from ${f.name}: ${cmp.addN} new tick${cmp.addN === 1 ? "" : "s"}`);
+      return true;
+    }
+    pendingSave = { fd, cmp, step: "summary" };
+    if (opts.quick) { renderProg(); renderMe(); ovlOpen("me"); $("#saveSec").scrollIntoView({ block: "start" }); }
     renderSaveBox();
+    if (opts.offerRemember) offerRemember(opts.offerRemember);
+    return true;
   } catch (err) {
     pendingSave = null;
     box.innerHTML = `<p>That doesn't look like an Octopath Traveler II save. Pick a file named like <b>SaveData1.sav</b>.</p>`;
+    if (opts.quick) { renderProg(); renderMe(); ovlOpen("me"); }
+    return false;
   }
+}
+$("#saveFile").addEventListener("change", async e => {
+  const f = e.target.files?.[0]; e.target.value = ""; if (!f) return;
+  readSaveFile(f);
 });
-$("#saveBox").addEventListener("click", e => {
-  const b = e.target.closest("button[data-save]"); if (!b || !pendingSave) return;
-  const act = b.dataset.save, { fd, cmp } = pendingSave;
-  if (act === "ask") { pendingSave.step = "confirm"; renderSaveBox(); return; }
-  if (act === "back") { pendingSave.step = "summary"; renderSaveBox(); return; }
-  pendingSave = null; $("#saveBox").hidden = true;
-  if (act !== "add" && act !== "match") return;
-  const sets = () => ({ done, tdone, idone, qdone });
-  change(act === "match" ? `Matched your save (${cmp.dropN} unticked)` : "Added ticks from your save", () => {
-    const S = sets();
+function applySave(fd, cmp, act, msg) {
+  change(msg, () => {
+    const S = { done, tdone, idone, qdone };
     for (const kind of Object.keys(cmp.add)) cmp.add[kind].forEach(k => S[kind].add(k));
     if (act === "match") for (const kind of Object.keys(cmp.drop)) cmp.drop[kind].forEach(k => S[kind].delete(k));
     for (const [c, v] of Object.entries(fd.story)) story[c] = act === "match" ? v : Math.max(Number(story[c]) || 0, v);
     TRAVELERS.forEach(([t]) => { if (!(t in story)) story[t] = 0; });
   });
   renderAll();
+}
+
+// ---- Quick update: remember the save file (Chrome and Edge on a computer) so one click re-reads it
+// Only a link to the file is kept, in this browser; the browser asks before the page can read it again.
+const QUICK = { ok: false, handle: null };
+const idb = (() => {
+  let dbp = null;
+  const open = () => dbp || (dbp = new Promise((res, rej) => { const r = indexedDB.open("ot2-quick-save", 1); r.onupgradeneeded = () => r.result.createObjectStore("kv"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+  const tx = (mode, fn) => open().then(db => new Promise((res, rej) => { const t = db.transaction("kv", mode); const out = fn(t.objectStore("kv")); t.oncomplete = () => res(out && out.result); t.onerror = () => rej(t.error); }));
+  return { get: k => tx("readonly", s => s.get(k)), set: (k, v) => tx("readwrite", s => s.put(v, k)), del: k => tx("readwrite", s => s.delete(k)) };
+})();
+async function quickInit() {
+  try {
+    if (!("showOpenFilePicker" in window) || !window.indexedDB) return;
+    if (window.top !== window.self) return;            // file pickers are blocked inside embedded frames
+    QUICK.ok = true;
+    $("#savePickBtn").hidden = false; $("#saveFileLbl").hidden = true;
+    QUICK.handle = (await idb.get("save")) || null;
+  } catch (e) { QUICK.ok = false; }
+  renderQuick();
+}
+function renderQuick() {
+  const box = $("#quickBox"), top = $("#saveTopBtn");
+  if (!QUICK.ok || !QUICK.handle) {
+    box.hidden = true;
+    top.querySelector(".lbl").innerHTML = 'Import<span class="lg"> save</span>';
+    top.title = "Tick what you've done from your Octopath Traveler II save file";
+    top.setAttribute("aria-label", "Import save");
+    return;
+  }
+  const n = esc(QUICK.handle.name);
+  box.hidden = false;
+  box.innerHTML = `<p><b>Quick update is on</b> for <code>${n}</code>. Save in the game, then press <b>Update now</b> (or the top-bar button) to tick anything new.</p>
+    <div class="btnrow"><button type="button" class="reset pri" data-quick="update">Update now</button><button type="button" class="reset" data-quick="forget">Forget this file</button></div>`;
+  top.querySelector(".lbl").innerHTML = 'Update<span class="lg"> save</span>';
+  top.title = `Re-read ${QUICK.handle.name} and tick anything new`;
+  top.setAttribute("aria-label", `Update from ${QUICK.handle.name}`);
+}
+function offerRemember(handle) {
+  const box = $("#rememberBox"); box.innerHTML = "";
+  const card = document.createElement("div");
+  card.className = "savewarn remember";
+  card.innerHTML = `<p><b>Remember ${esc(handle.name)} for one-click updates?</b></p>
+    <p class="ovl-note">This browser keeps a link to the file (not a copy of it), so next time the <b>Update save</b> button can re-read it straight away. Your browser will ask for permission before it reads the file again, the file is never uploaded, and you can forget it at any time.</p>
+    <p class="ovl-note">Each update reads whatever is in that save slot <b>right now</b>, so if you start another playthrough in the same slot, forget this file first. If an update would untick anything you ticked yourself, you&#39;ll be asked before it happens.</p>
+    <div class="btnrow"><button type="button" class="reset pri" data-quick="remember">Remember it</button><button type="button" class="reset" data-quick="noremember">Not now</button></div>`;
+  card._handle = handle;
+  box.appendChild(card);
+}
+async function pickAndRead() {
+  try {
+    const [h] = await window.showOpenFilePicker({ id: "ot2-save", types: [{ description: "Octopath Traveler II save", accept: { "application/octet-stream": [".sav"] } }], excludeAcceptAllOption: false, multiple: false });
+    const f = await h.getFile();
+    const same = QUICK.handle && (await QUICK.handle.isSameEntry?.(h).catch(() => false));
+    await readSaveFile(f, { offerRemember: same ? null : h });
+  } catch (e) { /* picker closed */ }
+}
+async function quickUpdate() {
+  const h = QUICK.handle; if (!h) return pickAndRead();
+  try {
+    let perm = await h.queryPermission({ mode: "read" });
+    if (perm !== "granted") perm = await h.requestPermission({ mode: "read" });
+    if (perm !== "granted") { showToast("Your browser didn't allow reading the save file", false); return; }
+    await readSaveFile(await h.getFile(), { quick: true });
+  } catch (e) {
+    showToast("Couldn't find the save file. It may have moved; pick it again.", false);
+    renderProg(); renderMe(); ovlOpen("me"); $("#saveSec").scrollIntoView({ block: "start" });
+  }
+}
+$("#savePickBtn").addEventListener("click", pickAndRead);
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-quick]"); if (!b) return;
+  const act = b.dataset.quick;
+  if (act === "update") { quickUpdate(); return; }
+  if (act === "forget") { try { await idb.del("save"); } catch (err) {} QUICK.handle = null; renderQuick(); showToast("Forgot the save file", false); return; }
+  const card = b.closest(".remember");
+  if (act === "remember" && card?._handle) {
+    try { await idb.set("save", card._handle); QUICK.handle = card._handle; showToast(`Quick update is on for ${card._handle.name}`, false); }
+    catch (err) { showToast("This browser couldn't remember the file", false); }
+    card.remove(); renderQuick();
+  }
+  if (act === "noremember") card?.remove();
+});
+quickInit();
+$("#saveBox").addEventListener("click", e => {
+  const b = e.target.closest("button[data-save]"); if (!b || !pendingSave) return;
+  const act = b.dataset.save, { fd, cmp } = pendingSave;
+  if (act === "ask") { pendingSave.step = "confirm"; renderSaveBox(); return; }
+  if (act === "back") { pendingSave.step = "summary"; renderSaveBox(); return; }
+  pendingSave = null;
+  $("#saveBox").hidden = true;
+  if (act !== "add" && act !== "match") return;
+  applySave(fd, cmp, act, act === "match" ? `Matched your save (${cmp.dropN} unticked)` : "Added ticks from your save");
 });
 if (!SAVEMAP) { const s = $("#saveSec"); if (s) s.hidden = true; $("#saveTopBtn").hidden = true; }
 // top-bar shortcut: open My progress at the save section and go straight to the file picker
 $("#saveTopBtn").addEventListener("click", () => {
+  if (QUICK.ok && QUICK.handle) { quickUpdate(); return; }   // remembered file: one click
   renderProg(); renderMe(); ovlOpen("me");
   $("#saveSec").scrollIntoView({ block: "start" });
-  $("#saveFile").click();
+  if (QUICK.ok) pickAndRead(); else $("#saveFile").click();
 });
 
 
