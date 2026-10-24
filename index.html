@@ -30,6 +30,10 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,7vw,3.2rem)
 .game a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .game .art{display:block;margin:-18px -18px 6px;height:170px;background:#1e2233;overflow:hidden;border-radius:11px 11px 0 0;border-bottom:1px solid var(--line)}
 .game .art img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 12%}
+/* type tags: what kind of thing each entry is (checklist, guide, ...) */
+.game .kinds{display:flex;flex-wrap:wrap;gap:6px}
+.kind{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-radius:99px;padding:2px 9px;background:var(--accent);color:var(--surface)}
+.kind-checklist::before{content:"✓ "}
 .game .t{font-family:var(--display);font-size:1.5rem;line-height:1.1}
 .game .d{color:var(--muted);font-size:.95rem}
 .game .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto;padding-top:6px}
@@ -51,6 +55,7 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,7vw,3.2rem)
     <li class="game">
       <a href="octopath-traveler-2/">
         <span class="art"><img src="images/octopath-traveler-2.png" alt="Throné slipping past a man in a dark alley, from Octopath Traveler II" width="683" height="667" loading="lazy"></span>
+        <span class="kinds" aria-label="Type"><span class="kind kind-checklist">Checklist</span></span>
         <span class="t">Octopath Traveler II</span>
         <span class="d">Steal targets and chests for every zone, all 67 side stories, and every townsperson worth Scrutinizing.</span>
         <span class="tags"><span>1,055 steals</span><span>534 chests</span><span>67 side stories</span><span>298 info NPCs</span></span>
