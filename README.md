@@ -13,6 +13,7 @@ Hi! 👋 This is where I put the things I make while playing through a game: che
 - 🗝️ **Every steal and chest**, zone by zone, plus the hidden items you find by talking to people
 - 📜 **All 67 side stories**: where they start, what unlocks them, and every step
 - 🔍 **Who to Scrutinize**: the townspeople with hidden items, clues and better shop stock
+- ⚔️ **Every secondary job**: where each guild is and how to earn all its licenses, plus the four advanced jobs
 - 🧭 **My progress**: set your chapters and see only what you can reach right now
 - 💾 **Fill in from your save**: pick your save file and it ticks off what you've already done (the file never leaves your browser)
 - ☁️ **Sign in with Discord** to keep your ticks on every device, or just use it without an account
@@ -33,6 +34,7 @@ These checklists stand on the work of guide writers and fans. Thank you!
 - [TheGamer](https://www.thegamer.com/octopath-traveler-2-best-items-to-take-from-npcs/): the best items to take from NPCs
 - [Octopath Traveler Wiki](https://octopathtraveler.fandom.com/wiki/Side_Stories_(Octopath_Traveler_II)): side story table and unlock conditions
 - [RPG Site](https://rpgsite.net/feature/13868-octopath-traveler-ii-side-quests-guide-walkthrough-for-all-side-stories): side story walkthroughs
+- Secondary jobs: [ArrPeeGeez](https://www.arrpeegeez.com/2023/03/octopath-traveler-ii-walkthrough-job.html), [Gameranx](https://gameranx.com/features/id/451675/article/octopath-traveler-2-how-to-unlock-all-secondary-job-licenses-rare-guild-items-guide/), [RPG Site](https://www.rpgsite.net/feature/13847-octopath-traveler-ii-secondary-job-unlocks-how-to-get-all-secondary-jobs), [Samurai Gamers](https://samurai-gamers.com/octopath-traveler-2/job-license-list-and-guild-locations/) and [High Ground Gaming](https://www.highgroundgaming.com/how-to-unlock-all-secret-jobs-in-octopath-traveler-2/)
 - Also checked for anything missing: [Neoseeker](https://www.neoseeker.com/octopath-traveler-ii/walkthrough), [Game8](https://game8.co/games/Octopath-Traveler-2/archives/404331), [Fextralife](https://octopathtraveler2.wiki.fextralife.com/Octopath_Traveler_II_Story_Chapters) and [Steam Community](https://steamcommunity.com/sharedfiles/filedetails/?id=3033482862) guides
 - [OT2R](https://github.com/MarvinXLII/OT2R) by MarvinXLII: the randomizer whose code reads the game's data tables, which is how the save import knows what each ID in a save means
 
