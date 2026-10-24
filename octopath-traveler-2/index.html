@@ -142,7 +142,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .jumpbtn{font:inherit;font-size:.85rem;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--bg);color:var(--muted);border-radius:8px;padding:4px 8px 4px 10px;cursor:pointer;margin-bottom:8px;margin-left:auto}
 .jumpbtn:hover{color:var(--ink);border-color:var(--accent)}
 .jumpbtn.savetop{margin-left:0}
-.savetop span{font-size:.95rem;line-height:1}
+.savetop>span[aria-hidden]{font-size:.95rem;line-height:1}
 @media (max-width:560px){ #jumpKey{display:none} .savetop .lg{display:none} .savetop{margin-left:0} .jumpbtn{margin-left:auto} .appbar-in{column-gap:8px} .jumpbtn{padding-inline:8px} }
 kbd{font-family:var(--body);font-size:.72rem;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--surface);color:var(--muted);white-space:nowrap}
 .pal{position:fixed;inset:0;z-index:50;background:rgba(10,12,24,.45);display:flex;justify-content:center;align-items:flex-start;padding:max(10vh,calc(env(safe-area-inset-top,0px) + 16px)) max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
@@ -309,6 +309,9 @@ details.locked:hover,details.locked:focus-within{opacity:1}
 .savewarn .muted{color:var(--muted)}
 .reset.warnbtn{border-color:var(--coin);color:var(--ink);font-weight:700}
 .ovl-note code{font-size:.82rem;word-break:break-all}
+.credits ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.credits a{color:var(--accent)}
+.creditsbtn{font-size:.88rem!important;color:var(--muted)}
 .keys{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;margin:0;align-items:baseline}
 .keys dt{white-space:nowrap}
 .keys dd{margin:0;color:var(--muted)}
@@ -348,7 +351,7 @@ details.locked:hover,details.locked:focus-within{opacity:1}
     <a class="homelink" href="../" title="All checklists" aria-label="All checklists">←</a>
     <h1 class="brand">Octopath Traveler 2</h1>
     <button type="button" class="jumpbtn" id="jumpBtn" aria-keyshortcuts="Control+K Meta+K /">Jump to… <kbd id="jumpKey">Ctrl K</kbd></button>
-    <button type="button" class="jumpbtn savetop" id="saveTopBtn" aria-label="Import save" title="Tick what you've done from your Octopath Traveler II save file"><span aria-hidden="true">⤒</span> Import<span class="lg"> save</span></button>
+    <button type="button" class="jumpbtn savetop" id="saveTopBtn" aria-label="Import save" title="Tick what you've done from your Octopath Traveler II save file"><span aria-hidden="true">⤒</span><span class="lbl">Import<span class="lg"> save</span></span></button>
     <span class="sync" id="sync">Saved in this browser</span>
     <button type="button" class="authbtn" id="authBtn" hidden>Sign in to sync</button>
   </div>
@@ -420,6 +423,54 @@ details.locked:hover,details.locked:focus-within{opacity:1}
   </div>
 </div>
 
+<div class="pal ovl" id="credits" hidden>
+  <div class="pal-box ovl-box" role="dialog" aria-modal="true" aria-labelledby="creditsTitle">
+    <div class="ovl-head"><h2 id="creditsTitle">Credits &amp; sources</h2><button type="button" class="xbtn" data-close="credits" aria-label="Close">✕</button></div>
+    <div class="ovl-body credits">
+      <p class="ovl-lead">This checklist stands on the work of guide writers and fans. Thank you! If you spot a mistake, their pages are the best place to double-check.</p>
+      <div class="ovl-sec">
+        <h3>Steals, chests and info NPCs</h3>
+        <ul>
+          <li><a href="https://nightlygamingbinge.com/octopath-traveler-ii-guides-and-walkthroughs/" target="_blank" rel="noopener">Nightly Gaming Binge</a>: region guides, chapter walkthroughs and "Path Actions" guides. The main source for steal targets, chests and who to Scrutinize.</li>
+          <li><a href="https://www.arrpeegeez.com/2023/02/octopath-traveler-ii-walkthrough-guide.html" target="_blank" rel="noopener">ArrPeeGeez</a>: area-by-area walkthrough, used for chests.</li>
+          <li><a href="https://www.thegamer.com/octopath-traveler-2-best-items-to-take-from-npcs/" target="_blank" rel="noopener">TheGamer</a>: the best items to take from NPCs.</li>
+        </ul>
+      </div>
+      <div class="ovl-sec">
+        <h3>Side stories</h3>
+        <ul>
+          <li><a href="https://octopathtraveler.fandom.com/wiki/Side_Stories_(Octopath_Traveler_II)" target="_blank" rel="noopener">Octopath Traveler Wiki</a>: the side story table and unlock conditions.</li>
+          <li><a href="https://rpgsite.net/feature/13868-octopath-traveler-ii-side-quests-guide-walkthrough-for-all-side-stories" target="_blank" rel="noopener">RPG Site</a>: side story walkthroughs.</li>
+          <li>Nightly Gaming Binge's region side story guides, for the step-by-step instructions.</li>
+        </ul>
+      </div>
+      <div class="ovl-sec">
+        <h3>Also checked for anything missing</h3>
+        <ul>
+          <li><a href="https://www.neoseeker.com/octopath-traveler-ii/walkthrough" target="_blank" rel="noopener">Neoseeker walkthrough</a></li>
+          <li><a href="https://game8.co/games/Octopath-Traveler-2/archives/404331" target="_blank" rel="noopener">Game8</a></li>
+          <li><a href="https://octopathtraveler2.wiki.fextralife.com/Octopath_Traveler_II_Story_Chapters" target="_blank" rel="noopener">Octopath Traveler II Fextralife wiki</a></li>
+          <li><a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3033482862" target="_blank" rel="noopener">Steam Community guides</a> and discussions</li>
+        </ul>
+      </div>
+      <div class="ovl-sec">
+        <h3>Reading save files</h3>
+        <ul>
+          <li><a href="https://github.com/MarvinXLII/OT2R" target="_blank" rel="noopener">OT2R</a> by MarvinXLII: the Octopath Traveler II randomizer, whose code reads the game's data tables. That's how the save import knows which chest, NPC or story each ID in a save belongs to.</li>
+        </ul>
+      </div>
+      <div class="ovl-sec">
+        <h3>Made with</h3>
+        <ul>
+          <li>Fonts: IM Fell English SC and Alegreya Sans, from Google Fonts.</li>
+          <li>Hosted on Cloudflare Pages; sign-in and syncing by Supabase.</li>
+        </ul>
+      </div>
+      <p class="ovl-note">A fan-made project, not affiliated with Square Enix. Octopath Traveler II and everything in it belongs to Square Enix.</p>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toastMsg"></span><button type="button" id="toastUndo">Undo</button></div>
 
 <div class="shell">
@@ -440,6 +491,7 @@ details.locked:hover,details.locked:focus-within{opacity:1}
       <span class="sidelabel">My game</span>
       <button type="button" class="tab mebtn" id="meBtn" aria-haspopup="dialog"><b>My progress</b><span id="meSum">Set your story chapters</span></button>
       <button type="button" class="tab helpbtn" id="helpBtn" aria-haspopup="dialog">Shortcuts <kbd>?</kbd></button>
+      <button type="button" class="tab creditsbtn" id="creditsBtn" aria-haspopup="dialog">Credits &amp; sources</button>
     </div>
 </aside>
 
@@ -493,7 +545,7 @@ details.locked:hover,details.locked:focus-within{opacity:1}
     </div>
     <main id="zlist"></main>
     <div class="foot">
-      <p>Steal lists come from Nightly Gaming Binge's region guides (marked by the site as possibly incomplete) and TheGamer. Some items are quest-locked: the Judge in Timberain appears after Meylan's quests, and Alpione leaves Gravell after her Next Chapter. A few items show 0% and can only be bought. Chests come from Nightly Gaming Binge's region guides and chapter walkthroughs plus ArrPeeGeez; a few zones have no documented chests.</p>
+      <p>Steal lists come from Nightly Gaming Binge's region guides (marked by the site as possibly incomplete) and TheGamer. Some items are quest-locked: the Judge in Timberain appears after Meylan's quests, and Alpione leaves Gravell after her Next Chapter. A few items show 0% and can only be bought. Chests come from Nightly Gaming Binge's region guides and chapter walkthroughs plus ArrPeeGeez; a few zones have no documented chests. <button type="button" class="xl" data-credits="1">All credits and sources</button></p>
       <p id="resetBox"><button class="reset" type="button" data-clear="steal">Clear steal ticks</button> <button class="reset" type="button" data-clear="chests">Clear chest ticks</button></p>
     </div>
   </section>
@@ -532,7 +584,7 @@ details.locked:hover,details.locked:focus-within{opacity:1}
     </div>
     <main id="qlist"></main>
     <div class="foot">
-      <p>Unlock conditions come from the Octopath Traveler Wiki side story table and RPG Site; steps are adapted from Nightly Gaming Binge's region walkthroughs. Where sources disagree, the story's note says so.</p>
+      <p>Unlock conditions come from the Octopath Traveler Wiki side story table and RPG Site; steps are adapted from Nightly Gaming Binge's region walkthroughs. Where sources disagree, the story's note says so. <button type="button" class="xl" data-credits="1">All credits and sources</button></p>
     </div>
   </section>
 
@@ -578,7 +630,7 @@ details.locked:hover,details.locked:focus-within{opacity:1}
     </div>
     <main id="ilist"></main>
     <div class="foot">
-      <p>From Nightly Gaming Binge's "Path Actions for Info" region guides, plus the information targets that side stories need. A few towns and night-only NPCs may be missing.</p>
+      <p>From Nightly Gaming Binge's "Path Actions for Info" region guides, plus the information targets that side stories need. A few towns and night-only NPCs may be missing. <button type="button" class="xl" data-credits="1">All credits and sources</button></p>
     </div>
   </section>
 
@@ -1607,6 +1659,8 @@ document.querySelectorAll(".ovl").forEach(o => o.addEventListener("mousedown", e
 document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", ovlClose));
 $("#meBtn").addEventListener("click", () => { renderProg(); renderMe(); ovlOpen("me"); });
 $("#helpBtn").addEventListener("click", () => ovlOpen("help"));
+$("#creditsBtn").addEventListener("click", () => ovlOpen("credits"));
+document.addEventListener("click", e => { if (e.target.closest("[data-credits]")) { e.preventDefault(); ovlOpen("credits"); } });
 document.querySelectorAll(".modk").forEach(k => { k.textContent = isMac ? "⌘" : "Ctrl"; });
 
 function renderMe() {

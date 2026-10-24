@@ -24,6 +24,20 @@ Hi! 👋 This is my little collection of checklists for the games I'm playing, s
 
 Got an idea or spotted something wrong? Open an issue. I'd love to hear it!
 
+## Credits 💛
+
+These checklists stand on the work of guide writers and fans. Thank you!
+
+- [Nightly Gaming Binge](https://nightlygamingbinge.com/octopath-traveler-ii-guides-and-walkthroughs/): region guides, chapter walkthroughs and "Path Actions" guides (the main source for steals, chests, side story steps and who to Scrutinize)
+- [ArrPeeGeez](https://www.arrpeegeez.com/2023/02/octopath-traveler-ii-walkthrough-guide.html): area-by-area walkthrough, used for chests
+- [TheGamer](https://www.thegamer.com/octopath-traveler-2-best-items-to-take-from-npcs/): the best items to take from NPCs
+- [Octopath Traveler Wiki](https://octopathtraveler.fandom.com/wiki/Side_Stories_(Octopath_Traveler_II)): side story table and unlock conditions
+- [RPG Site](https://rpgsite.net/feature/13868-octopath-traveler-ii-side-quests-guide-walkthrough-for-all-side-stories): side story walkthroughs
+- Also checked for anything missing: [Neoseeker](https://www.neoseeker.com/octopath-traveler-ii/walkthrough), [Game8](https://game8.co/games/Octopath-Traveler-2/archives/404331), [Fextralife](https://octopathtraveler2.wiki.fextralife.com/Octopath_Traveler_II_Story_Chapters) and [Steam Community](https://steamcommunity.com/sharedfiles/filedetails/?id=3033482862) guides
+- [OT2R](https://github.com/MarvinXLII/OT2R) by MarvinXLII: the randomizer whose code reads the game's data tables, which is how the save import knows what each ID in a save means
+
+A fan-made project, not affiliated with Square Enix. Octopath Traveler II belongs to Square Enix.
+
 ## For the curious
 
 It's just plain HTML pages, no build step. Every push to `main` goes live on Cloudflare Pages automatically.
