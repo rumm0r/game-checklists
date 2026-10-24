@@ -28,8 +28,8 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,7vw,3.2rem)
 .game a{display:flex;flex-direction:column;gap:8px;height:100%;box-sizing:border-box;padding:18px 18px 16px;background:var(--surface);border:1px solid var(--line);border-radius:12px;color:inherit;text-decoration:none;transition:border-color .15s,transform .15s}
 .game a:hover{border-color:var(--accent);transform:translateY(-2px)}
 .game a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.game .art{display:block;margin:-18px -18px 6px;height:120px;overflow:hidden;border-radius:11px 11px 0 0;border-bottom:1px solid var(--line)}
-.game .art svg{display:block;width:100%;height:100%}
+.game .art{display:block;margin:-18px -18px 6px;height:170px;background:#1e2233;overflow:hidden;border-radius:11px 11px 0 0;border-bottom:1px solid var(--line)}
+.game .art img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 12%}
 .game .t{font-family:var(--display);font-size:1.5rem;line-height:1.1}
 .game .d{color:var(--muted);font-size:.95rem}
 .game .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto;padding-top:6px}
@@ -37,6 +37,7 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,7vw,3.2rem)
 .game .go{color:var(--accent);font-weight:700;font-size:.9rem}
 [hidden]{display:none!important}
 .game.soon a{border-style:dashed;pointer-events:none;opacity:.7}
+.foot.legal{margin-top:8px;font-size:.78rem}
 .foot{margin-top:36px;color:var(--muted);font-size:.85rem;max-width:60ch}
 @media (prefers-reduced-motion:reduce){ .game a{transition:none} .game a:hover{transform:none} }
 </style>
@@ -48,18 +49,7 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,7vw,3.2rem)
   <ul class="games">
     <li class="game">
       <a href="octopath-traveler-2/">
-        <span class="art" aria-hidden="true"><svg viewBox="0 0 320 140" preserveAspectRatio="xMidYMid slice" focusable="false">
-          <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b2550"/><stop offset=".65" stop-color="#3a3566"/><stop offset="1" stop-color="#7a5a4a"/></linearGradient>
-          <radialGradient id="glow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#f3d27a" stop-opacity=".55"/><stop offset="1" stop-color="#f3d27a" stop-opacity="0"/></radialGradient></defs>
-          <rect width="320" height="140" fill="url(#sky)"/>
-          <g fill="#f6e7b8" opacity=".8"><circle cx="28" cy="22" r="1.2"/><circle cx="70" cy="12" r="0.9"/><circle cx="110" cy="30" r="0.8"/><circle cx="232" cy="18" r="1.1"/><circle cx="276" cy="36" r="0.9"/><circle cx="300" cy="14" r="1.3"/><circle cx="48" cy="52" r="0.7"/><circle cx="258" cy="58" r="0.7"/></g>
-          <g stroke="#e3b54a" stroke-width="1" opacity=".35"><line x1="160" y1="70" x2="350.0" y2="70.0"/><line x1="160" y1="70" x2="294.4" y2="204.4"/><line x1="160" y1="70" x2="160.0" y2="260.0"/><line x1="160" y1="70" x2="25.6" y2="204.4"/><line x1="160" y1="70" x2="-30.0" y2="70.0"/><line x1="160" y1="70" x2="25.6" y2="-64.4"/><line x1="160" y1="70" x2="160.0" y2="-120.0"/><line x1="160" y1="70" x2="294.4" y2="-64.4"/></g>
-          <path d="M0 118 Q60 100 120 112 T240 108 T320 104 V140 H0Z" fill="#141a33" opacity=".9"/>
-          <circle cx="160" cy="70" r="46" fill="url(#glow)"/>
-          <polygon points="160.0,40.0 163.4,61.7 181.2,48.8 168.3,66.6 190.0,70.0 168.3,73.4 181.2,91.2 163.4,78.3 160.0,100.0 156.6,78.3 138.8,91.2 151.7,73.4 130.0,70.0 151.7,66.6 138.8,48.8 156.6,61.7" fill="#e3b54a"/>
-          <polygon points="166.1,55.2 164.2,65.8 174.8,63.9 166.0,70.0 174.8,76.1 164.2,74.2 166.1,84.8 160.0,76.0 153.9,84.8 155.8,74.2 145.2,76.1 154.0,70.0 145.2,63.9 155.8,65.8 153.9,55.2 160.0,64.0" fill="#f6e7b8" opacity=".9"/>
-          <circle cx="160" cy="70" r="3.5" fill="#1b2550"/>
-        </svg></span>
+        <span class="art"><img src="images/octopath-traveler-2.png" alt="Throné slipping past a man in a dark alley, from Octopath Traveler II" width="683" height="667" loading="lazy"></span>
         <span class="t">Octopath Traveler II</span>
         <span class="d">Steal targets and chests for every zone, all 67 side stories, and every townsperson worth Scrutinizing.</span>
         <span class="tags"><span>1,055 steals</span><span>534 chests</span><span>67 side stories</span><span>298 info NPCs</span></span>
@@ -75,6 +65,7 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,7vw,3.2rem)
     </li>
   </ul>
   <p class="foot">Progress is stored separately for each game, in each browser you use.</p>
+  <p class="foot legal">A fan-made project, not affiliated with Square Enix. Octopath Traveler II artwork © 2023 SQUARE ENIX CO., LTD. All Rights Reserved.</p>
 </div>
 </body>
 </html>
