@@ -16,6 +16,7 @@ Hi! 👋 This is where I put the things I make while playing through a game: che
 - ⚔️ **Every secondary job**: where each guild is and how to earn all its licenses, plus the four advanced jobs
 - 🧭 **My progress**: set your chapters and see only what you can reach right now
 - 💾 **Fill in from your save**: pick your save file and it ticks off what you've already done (the file never leaves your browser)
+- ⟳ **One-click save updates**: in Chrome or Edge on a computer, the site can remember your save file so re-importing takes one click (Firefox, Safari and phones just pick the file each time)
 - ☁️ **Sign in with Discord** to keep your ticks on every device, or just use it without an account
 
 ## Coming up

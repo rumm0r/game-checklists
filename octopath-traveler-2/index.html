@@ -451,6 +451,7 @@ details.town{scroll-margin-top:calc(var(--abh,56px) + 12px)}
         <h3>Fill in from my save</h3>
         <p class="ovl-note">Pick your Octopath Traveler II save file and the checklist ticks what you've already done. The file is read right here in your browser and never uploaded anywhere. Your save itself isn't changed.</p>
         <p class="ovl-note">On Steam it's in <code>Documents\My Games\Octopath_Traveler2\Steam\&lt;number&gt;\SaveGames</code>, named like <b>SaveData1.sav</b> (the number is the save slot).</p>
+        <p class="ovl-note" id="quickNote"></p>
         <div class="quickbox" id="quickBox" hidden></div>
         <div id="rememberBox"></div>
         <div class="btnrow"><button type="button" class="reset pri" id="savePickBtn" hidden>Choose save file</button><label class="reset pri filebtn" id="saveFileLbl">Choose save file<input type="file" id="saveFile" accept=".sav"></label></div>
@@ -2298,16 +2299,21 @@ const idb = (() => {
 })();
 async function quickInit() {
   try {
-    if (!("showOpenFilePicker" in window) || !window.indexedDB) return;
-    if (window.top !== window.self) return;            // file pickers are blocked inside embedded frames
+    // file pickers are blocked inside embedded frames
+    if (!("showOpenFilePicker" in window) || !window.indexedDB || window.top !== window.self) { renderQuick(); return; }
     QUICK.ok = true;
     $("#savePickBtn").hidden = false; $("#saveFileLbl").hidden = true;
     QUICK.handle = (await idb.get("save")) || null;
   } catch (e) { QUICK.ok = false; }
   renderQuick();
 }
+const QUICK_WHERE = "One-click updates work in <b>Chrome</b> and <b>Edge</b> (and Opera or Arc) on a <b>Windows, Mac or Linux computer</b>. They don't work in Firefox, Safari, on phones or tablets, or when this page is shown inside another site; there you just pick the file each time.";
 function renderQuick() {
-  const box = $("#quickBox"), top = $("#saveTopBtn");
+  const box = $("#quickBox"), top = $("#saveTopBtn"), note = $("#quickNote");
+  note.innerHTML = QUICK.ok
+    ? (QUICK.handle ? "" : "Tip: this browser can remember your save file so later updates take one click. You'll be offered that after you pick it.")
+    : "Tip: " + QUICK_WHERE;
+  note.hidden = !note.innerHTML;
   if (!QUICK.ok || !QUICK.handle) {
     box.hidden = true;
     top.querySelector(".lbl").innerHTML = 'Import<span class="lg"> save</span>';
@@ -2328,7 +2334,7 @@ function offerRemember(handle) {
   const card = document.createElement("div");
   card.className = "savewarn remember";
   card.innerHTML = `<p><b>Remember ${esc(handle.name)} for one-click updates?</b></p>
-    <p class="ovl-note">This browser keeps a link to the file (not a copy of it), so next time the <b>Update save</b> button can re-read it straight away. Your browser will ask for permission before it reads the file again, the file is never uploaded, and you can forget it at any time.</p>
+    <p class="ovl-note">This browser keeps a link to the file (not a copy of it), so next time the <b>Update save</b> button can re-read it straight away. Your browser will ask for permission before it reads the file again, the file is never uploaded, and you can forget it at any time. Works in Chrome and Edge on a computer.</p>
     <p class="ovl-note">Each update reads whatever is in that save slot <b>right now</b>, so if you start another playthrough in the same slot, forget this file first. If an update would untick anything you ticked yourself, you&#39;ll be asked before it happens.</p>
     <div class="btnrow"><button type="button" class="reset pri" data-quick="remember">Remember it</button><button type="button" class="reset" data-quick="noremember">Not now</button></div>`;
   card._handle = handle;
