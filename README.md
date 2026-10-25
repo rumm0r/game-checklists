@@ -12,7 +12,7 @@ Hi! 👋 This is where I put the things I make while playing through a game: che
 
 - 🗝️ **Every steal and chest**, zone by zone, plus the hidden items you find by talking to people
 - 📜 **All 67 side stories**: where they start, what unlocks them, and every step
-- 🔍 **Who to Scrutinize**: the townspeople with hidden items, clues and better shop stock
+- 🔍 **What people know**: hidden items, side-story clues, thieving tips and better shop stock, shown right under each person alongside what you can steal from them, plus a guide to every path action
 - ⚔️ **Every secondary job**: where each guild is and how to earn all its licenses, plus the four advanced jobs
 - 🧭 **My progress**: set your chapters and see only what you can reach right now
 - 💾 **Fill in from your save**: pick your save file and it ticks off what you've already done (the file never leaves your browser)
@@ -37,6 +37,7 @@ These checklists stand on the work of guide writers and fans. Thank you!
 - [RPG Site](https://rpgsite.net/feature/13868-octopath-traveler-ii-side-quests-guide-walkthrough-for-all-side-stories): side story walkthroughs
 - Secondary jobs: [ArrPeeGeez](https://www.arrpeegeez.com/2023/03/octopath-traveler-ii-walkthrough-job.html), [Gameranx](https://gameranx.com/features/id/451675/article/octopath-traveler-2-how-to-unlock-all-secondary-job-licenses-rare-guild-items-guide/), [RPG Site](https://www.rpgsite.net/feature/13847-octopath-traveler-ii-secondary-job-unlocks-how-to-get-all-secondary-jobs), [Samurai Gamers](https://samurai-gamers.com/octopath-traveler-2/job-license-list-and-guild-locations/) and [High Ground Gaming](https://www.highgroundgaming.com/how-to-unlock-all-secret-jobs-in-octopath-traveler-2/)
 - Also checked for anything missing: [Neoseeker](https://www.neoseeker.com/octopath-traveler-ii/walkthrough), [Game8](https://game8.co/games/Octopath-Traveler-2/archives/404331), [Fextralife](https://octopathtraveler2.wiki.fextralife.com/Octopath_Traveler_II_Story_Chapters) and [Steam Community](https://steamcommunity.com/sharedfiles/filedetails/?id=3033482862) guides
+- [Samurai Gamers](https://samurai-gamers.com/octopath-traveler-2/path-action-list/): what each path action does
 - [OT2R](https://github.com/MarvinXLII/OT2R) by MarvinXLII: the randomizer whose code reads the game's data tables, which is how the save import knows what each ID in a save means
 
 A fan-made project, not affiliated with Square Enix. Octopath Traveler II belongs to Square Enix.
