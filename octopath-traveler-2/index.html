@@ -283,6 +283,15 @@ details.locked .tag:not(.lock){filter:saturate(.3)}
 .zlh{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
 .zq.fin .xl{color:var(--done)}
 .hsrc{color:var(--ink)!important}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface);margin-bottom:18px}
+.vgrid .chest{box-shadow:0 1px 0 var(--line),1px 0 0 var(--line);border-bottom:0;padding:10px 14px;min-width:0}
+
+.vgrid .vk{font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-left:6px}
+.vgrid .vin{font-size:.8rem}
+.vgrid .tags{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px}
+.vgrid .cl .vhd{display:block;color:var(--ink)}
+.vgrid .cl .vhd .vk{display:inline}
+.vgrid .chest input:checked~.cl .vhd b{color:var(--done);text-decoration:line-through}
 .pinfos{display:flex;flex-direction:column;gap:2px;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
 .items>.pinfos:first-child{margin-top:0;padding-top:0;border-top:0}
 .zsec .chest.pinf{padding:4px 0;box-shadow:none;border:0}
@@ -493,7 +502,7 @@ details.town{scroll-margin-top:calc(var(--abh,56px) + 12px)}
     <div class="ovl-body">
       <dl class="keys">
         <dt><kbd class="modk">Ctrl</kbd> <kbd>K</kbd> or <kbd>/</kbd></dt><dd>Jump to a zone, NPC, item, story or person</dd>
-        <dt><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></dt><dd>Switch between the three lists</dd>
+        <dt><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd></dt><dd>Switch between the four lists</dd>
         <dt><kbd>S</kbd></dt><dd>Search the current list</dd>
         <dt><kbd>F</kbd></dt><dd>Show or hide the filters</dd>
         <dt><kbd>P</kbd></dt><dd>Open My progress</dd>
@@ -544,6 +553,14 @@ details.town{scroll-margin-top:calc(var(--abh,56px) + 12px)}
           <li><a href="https://game8.co/games/Octopath-Traveler-2/archives/404331" target="_blank" rel="noopener">Game8</a></li>
           <li><a href="https://octopathtraveler2.wiki.fextralife.com/Octopath_Traveler_II_Story_Chapters" target="_blank" rel="noopener">Octopath Traveler II Fextralife wiki</a></li>
           <li><a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3033482862" target="_blank" rel="noopener">Steam Community guides</a> and discussions</li>
+        </ul>
+      </div>
+      <div class="ovl-sec">
+        <h3>Zones visited</h3>
+        <ul>
+          <li><a href="https://samurai-gamers.com/octopath-traveler-2/trophies-and-achievements-list-20/" target="_blank" rel="noopener">Samurai Gamers</a>: the Master of Solistia achievement.</li>
+          <li><a href="https://steamcommunity.com/app/1971650/discussions/0/3782499316872148100" target="_blank" rel="noopener">Steam Community discussion</a>: places players found easy to miss.</li>
+          <li><a href="https://samurai-gamers.com/octopath-traveler-2/path-action-list/" target="_blank" rel="noopener">Samurai Gamers' path action list</a>: what each path action does.</li>
         </ul>
       </div>
       <div class="ovl-sec">
@@ -630,6 +647,7 @@ details.town{scroll-margin-top:calc(var(--abh,56px) + 12px)}
       <button type="button" class="tab pagetab" data-tab="zones" aria-current="page">Items to Steal &amp; Treasures</button>
       <button type="button" class="tab pagetab" data-tab="sidestories" aria-current="false">Side stories</button>
       <button type="button" class="tab pagetab" data-tab="jobs" aria-current="false">Secondary jobs</button>
+      <button type="button" class="tab pagetab" data-tab="visits" aria-current="false">Zones visited</button>
     </nav>
     <div class="togs" id="togs" role="group" aria-label="Sections to show">
       <span class="tabhint">Show</span>
@@ -748,6 +766,42 @@ details.town{scroll-margin-top:calc(var(--abh,56px) + 12px)}
     <main id="qlist"></main>
     <div class="foot">
       <p>Unlock conditions come from the Octopath Traveler Wiki side story table and RPG Site; steps are adapted from Nightly Gaming Binge's region walkthroughs. Where sources disagree, the story's note says so. <button type="button" class="xl" data-credits="1">All credits and sources</button></p>
+    </div>
+  </section>
+
+  <section id="v-visits" hidden>
+    <div class="vhead">
+      <div class="vtext">
+        <h2 class="vt">Zones visited</h2>
+        <p class="vd">Every place on the world map. Visit them all for the <b>Master of Solistia</b> achievement: "Traveled to every location on the map."</p>
+      </div>
+      <div class="vprog"><b id="vcount">0 / 0</b><div class="bar"><i id="vbar"></i></div></div>
+    </div>
+    <details class="tipsbox"><summary>How this list works</summary>
+      <ul>
+        <li>The list is the game's own list of world map locations, the same places the achievement counts. A town's districts and a dungeon's floors are one location; the <b>Includes</b> line names them.</li>
+        <li><b>Import save</b> ticks every place your save has been to. The game keeps a record of each area you've set foot in, so this is exact.</li>
+        <li>Easy to miss, according to players on Steam: Starfall Spring off the Southern Cropdale Trail, Frigit Isle after Osvald's story, caves you reach by boat, and the islands out at sea, which need your own ship.</li>
+        <li>Place names open that zone's steals, chests and people.</li>
+      </ul>
+    </details>
+    <div class="filters">
+      <div class="fbar">
+        <input type="search" id="vq" class="fsearch" placeholder="Search a place or region…" aria-label="Search places">
+        <button type="button" class="fbtn" data-fp="v" aria-expanded="false" aria-controls="vfb">Filters<span class="fn" id="vfn" hidden></span></button>
+      </div>
+      <div class="achips" id="vact" hidden></div>
+      <div class="fbody" id="vfb" hidden>
+        <div class="frow"><span class="flabel">Region</span><div class="fctl"><select id="vregion" class="fsel" aria-label="Region"></select></div></div>
+        <div class="frow"><span class="flabel">Type</span><div class="chips" id="vtypes" role="group" aria-label="Place types (pick any)"></div></div>
+        <div class="frow"><span class="flabel">Show</span><div class="fctl">
+          <label class="toggle"><input type="checkbox" id="vHide"> Hide places I've been</label>
+        </div></div>
+      </div>
+    </div>
+    <main id="vlist"></main>
+    <div class="foot">
+      <p>Locations come from the game's world map table, read with OT2R. The achievement text is from Samurai Gamers' achievement list, and the easy-to-miss places from a Steam Community discussion. <button type="button" class="xl" data-credits="1">All credits and sources</button></p>
     </div>
   </section>
 
@@ -886,7 +940,7 @@ function zNeed(z) {
   for (const c of z.ch) { const gap = chNum(c.l) - 1 - (Number(story[c.c]) || 0); if (!best || gap < best.gap) best = { c, gap }; }
   return best ? `${best.c.c} ${best.c.l.replace(/ \(.*\)/, "")}` : "";
 }
-function renderAll() { renderZones(); renderQuests(); renderProg(); renderJobs(); renderMe(); }
+function renderAll() { renderZones(); renderQuests(); renderProg(); renderJobs(); if (tab === "visits") renderVisits(); renderMe(); }
 
 // ---- undo: snapshot before a change, one step back
 let undoSnap = null, toastT = null;
@@ -968,6 +1022,7 @@ function tocItems() {
   // what's actually on screen right now (filters already applied)
   if (tab === "zones") return [...document.querySelectorAll("#zlist details.zone[data-z]")].map(d => { const z = ZONES[Number(d.dataset.z)]; return { el: d, group: zstate.sort === "story" ? tocBand(z) : z.region, label: z.name, fin: zFinished(z), locked: d.classList.contains("locked") }; });
   if (tab === "jobs") return [...document.querySelectorAll("#jlist details.job[data-j]")].map(d => { const j = JOBS[Number(d.dataset.j)]; return { el: d, group: j.kind === "base" ? "Guild jobs" : "Advanced jobs", label: j.name, fin: jDone(j) === j.lic.length, locked: false }; });
+  if (tab === "visits") return [...document.querySelectorAll("#vlist label[data-v]")].map(d => { const v = VISITS[Number(d.dataset.v)]; return { el: d, group: v.r, label: v.n, fin: qdone.has(vKey(v)), locked: d.classList.contains("locked") }; });
   if (tab === "sidestories") return [...document.querySelectorAll("#qlist details.quest[data-q]")].map(d => { const x = QUESTS[Number(d.dataset.q)]; return { el: d, group: x.region, label: x.name, fin: qdone.has(x.name), locked: d.classList.contains("locked") }; });
   return [];
 }
@@ -978,7 +1033,7 @@ const tocQ = {};   // sidebar filter text, per tab
 function renderToc() {
   const box = $("#tocList"); if (!box) return;
   const items = tocItems();
-  const what = tab === "zones" ? "zones" : tab === "sidestories" ? "side stories" : "jobs";
+  const what = tab === "zones" ? "zones" : tab === "sidestories" ? "side stories" : tab === "visits" ? "places" : "jobs";
   $("#tocLabel").textContent = what[0].toUpperCase() + what.slice(1);
   $("#tocQ").placeholder = `Filter ${what}…`;
   $("#tocQ").setAttribute("aria-label", `Filter the ${what} in this sidebar list`);
@@ -1288,8 +1343,8 @@ function zVisible(z) {
 }
 function renderZones() {
   const anyShown = showSteal() || showTre() || showHid();
-  $("#v-zones").hidden = !anyShown;
-  if (!anyShown) return;
+  $("#v-zones").hidden = tab !== "zones" || !anyShown;
+  if (tab !== "zones" || !anyShown) { renderZChips(); return; }
   zHeader();
   const q = zstate.q.trim().toLowerCase();
   let html = "";
@@ -1612,6 +1667,93 @@ document.addEventListener("click", e => {
   e.preventDefault(); e.stopPropagation(); ovlOpen("paths");
 });
 
+// ================= Zones visited (the world map locations the Master of Solistia achievement counts)
+const VISITS = [{"id": 3, "n": "Flamechurch Pilgrims' Way", "r": "Crestlands", "k": "field", "lv": [5], "sub": []}, {"id": 4, "n": "Eastern Flamechurch Pass", "r": "Crestlands", "k": "field", "lv": [6], "sub": []}, {"id": 5, "n": "Western Montwise Pass", "r": "Crestlands", "k": "field", "lv": [7], "sub": []}, {"id": 6, "n": "Borderfall", "r": "Crestlands", "k": "field", "lv": [8], "sub": []}, {"id": 7, "n": "Northern Montwise Pass", "r": "Crestlands", "k": "field", "lv": [9], "sub": []}, {"id": 8, "n": "Western Merry Hills Pass", "r": "Crestlands", "k": "field", "lv": [10], "sub": []}, {"id": 9, "n": "Abandoned Traverse", "r": "Crestlands", "k": "field", "lv": [11], "sub": []}, {"id": 10, "n": "Cathedral Cellars", "r": "Crestlands", "k": "dungeon", "lv": [12], "sub": []}, {"id": 11, "n": "Forsaken Graveyard", "r": "Crestlands", "k": "dungeon", "lv": [13], "sub": []}, {"id": 12, "n": "Seat of the Water Sprite", "r": "Crestlands", "k": "dungeon", "lv": [14], "sub": []}, {"id": 150, "n": "Underground Laboratory", "r": "Crestlands", "k": "dungeon", "lv": [190], "sub": []}, {"id": 13, "n": "Altar of the Flamebringer", "r": "Crestlands", "k": "dungeon", "lv": [16], "sub": []}, {"id": 14, "n": "Shrine of Ul'sterra", "r": "Crestlands", "k": "dungeon", "lv": [17, 34], "sub": ["Stage of the Moon and Sun"]}, {"id": 16, "n": "Abandoned Church", "r": "Crestlands", "k": "dungeon", "lv": [15], "sub": []}, {"id": 17, "n": "Flamechurch", "r": "Crestlands", "k": "town", "lv": [20], "sub": []}, {"id": 18, "n": "Flamechurch: Cathedral", "r": "Crestlands", "k": "town", "lv": [21, 22, 183], "sub": ["Flamechurch: Cathedral Entrance"]}, {"id": 19, "n": "Montwise", "r": "Crestlands", "k": "town", "lv": [24, 25, 26, 300], "sub": ["Montwise: Library", "Montwise: Underground Arena"]}, {"id": 20, "n": "Merry Hills", "r": "Crestlands", "k": "town", "lv": [27, 33], "sub": ["Merry Hills: Shrine Entrance"]}, {"id": 21, "n": "Northern Ryu Sands", "r": "Hinoeuma", "k": "field", "lv": [19], "sub": []}, {"id": 23, "n": "Western Sai Sands", "r": "Hinoeuma", "k": "field", "lv": [35], "sub": []}, {"id": 24, "n": "Southern Sai Sands", "r": "Hinoeuma", "k": "field", "lv": [36], "sub": []}, {"id": 25, "n": "Eastern Sai Sands", "r": "Hinoeuma", "k": "field", "lv": [37], "sub": []}, {"id": 145, "n": "Sandflow Pass", "r": "Hinoeuma", "k": "field", "lv": [179], "sub": []}, {"id": 162, "n": "Old Campsite", "r": "Hinoeuma", "k": "field", "lv": [197], "sub": []}, {"id": 26, "n": "Southern Ku Sands", "r": "Hinoeuma", "k": "field", "lv": [23, 120], "sub": ["Battlefield"]}, {"id": 27, "n": "Eastern Ku Sands", "r": "Hinoeuma", "k": "field", "lv": [38], "sub": []}, {"id": 28, "n": "Dragonridge", "r": "Hinoeuma", "k": "dungeon", "lv": [39], "sub": []}, {"id": 29, "n": "Quicksand Gaol", "r": "Hinoeuma", "k": "dungeon", "lv": [40], "sub": []}, {"id": 30, "n": "Decaying Temple", "r": "Hinoeuma", "k": "dungeon", "lv": [41], "sub": []}, {"id": 146, "n": "Sand Lion's Den", "r": "Hinoeuma", "k": "dungeon", "lv": [180], "sub": []}, {"id": 31, "n": "Altar of the Thunderblade", "r": "Hinoeuma", "k": "dungeon", "lv": [42], "sub": []}, {"id": 32, "n": "Tranquil Grotto", "r": "Hinoeuma", "k": "dungeon", "lv": [43], "sub": []}, {"id": 155, "n": "Five-Tiered Tower", "r": "Hinoeuma", "k": "dungeon", "lv": [214, 215, 216, 217, 225], "sub": ["Five-Tiered Tower: Second Floor", "Five-Tiered Tower: Third Floor", "Five-Tiered Tower: Fourth Floor", "Five-Tiered Tower: Top Floor"]}, {"id": 33, "n": "Ryu", "r": "Hinoeuma", "k": "town", "lv": [28], "sub": []}, {"id": 34, "n": "Sai", "r": "Hinoeuma", "k": "town", "lv": [29, 177], "sub": ["Sai: East District"]}, {"id": 35, "n": "Ku", "r": "Hinoeuma", "k": "town", "lv": [30, 31, 32, 121, 236], "sub": ["Ku: Castle Town", "Castle Ku: Entrance", "Castle Ku"]}, {"id": 36, "n": "New Delsta Harbor: Anchorage", "r": "Brightlands", "k": "field", "lv": [44], "sub": []}, {"id": 37, "n": "New Delsta Flats", "r": "Brightlands", "k": "field", "lv": [45], "sub": []}, {"id": 38, "n": "Eastern New Delsta Highroad", "r": "Brightlands", "k": "field", "lv": [46], "sub": []}, {"id": 39, "n": "Western Clockbank Highroad", "r": "Brightlands", "k": "field", "lv": [47], "sub": []}, {"id": 40, "n": "Southern Clockbank Highroad", "r": "Brightlands", "k": "field", "lv": [48], "sub": []}, {"id": 147, "n": "Path to Mount Liphia", "r": "Brightlands", "k": "field", "lv": [181], "sub": []}, {"id": 41, "n": "Deserted Highroad", "r": "Brightlands", "k": "field", "lv": [49], "sub": []}, {"id": 42, "n": "Diamante's Estate", "r": "Brightlands", "k": "dungeon", "lv": [50], "sub": []}, {"id": 43, "n": "Theater: Backstage", "r": "Brightlands", "k": "dungeon", "lv": [51], "sub": ["Theater"]}, {"id": 44, "n": "Abandoned Waterway", "r": "Brightlands", "k": "dungeon", "lv": [52], "sub": []}, {"id": 45, "n": "Sunken Maw", "r": "Brightlands", "k": "dungeon", "lv": [53], "sub": []}, {"id": 46, "n": "The Roque Company: Factory", "r": "Brightlands", "k": "dungeon", "lv": [54], "sub": []}, {"id": 148, "n": "Mount Liphia", "r": "Brightlands", "k": "dungeon", "lv": [182], "sub": []}, {"id": 164, "n": "Old Clock Tower", "r": "Brightlands", "k": "dungeon", "lv": [227], "sub": []}, {"id": 47, "n": "Altar of the Prince of Thieves", "r": "Brightlands", "k": "dungeon", "lv": [56], "sub": []}, {"id": 48, "n": "Underground Waterway", "r": "Brightlands", "k": "dungeon", "lv": [57], "sub": []}, {"id": 49, "n": "Lostseed Castle", "r": "Brightlands", "k": "dungeon", "lv": [58, 201], "sub": ["Lostseed Castle: Upper Level"]}, {"id": 51, "n": "New Delsta", "r": "Brightlands", "k": "town", "lv": [60, 61, 62, 195], "sub": ["New Delsta: Backstreets", "New Delsta: Game Parlor"]}, {"id": 52, "n": "Abandoned Village", "r": "Brightlands", "k": "town", "lv": [63, 196], "sub": ["Healeaks"]}, {"id": 53, "n": "Clockbank", "r": "Brightlands", "k": "town", "lv": [64, 65], "sub": ["Clockbank: Industrial District"]}, {"id": 54, "n": "Lostseed", "r": "Brightlands", "k": "town", "lv": [66], "sub": []}, {"id": 55, "n": "Path to the Tombs of the Wardenbeasts", "r": "Toto'haha", "k": "field", "lv": [67], "sub": []}, {"id": 56, "n": "North Beasting Traverse", "r": "Toto'haha", "k": "field", "lv": [68], "sub": []}, {"id": 57, "n": "Beasting Bay: Anchorage", "r": "Toto'haha", "k": "field", "lv": [69], "sub": []}, {"id": 58, "n": "Western Tropu'hopu Traverse", "r": "Toto'haha", "k": "field", "lv": [70], "sub": []}, {"id": 61, "n": "Southern Nameless Village Traverse", "r": "Toto'haha", "k": "field", "lv": [73], "sub": []}, {"id": 62, "n": "Tombs of the Wardenbeasts", "r": "Toto'haha", "k": "dungeon", "lv": [74], "sub": []}, {"id": 63, "n": "Cavern of Waves", "r": "Toto'haha", "k": "dungeon", "lv": [176], "sub": []}, {"id": 64, "n": "Sinking Ruins", "r": "Toto'haha", "k": "dungeon", "lv": [75], "sub": []}, {"id": 65, "n": "Altar of the Huntress", "r": "Toto'haha", "k": "dungeon", "lv": [175], "sub": []}, {"id": 66, "n": "Wandering Wood", "r": "Toto'haha", "k": "dungeon", "lv": [71, 76, 202], "sub": ["Rifted Rock"]}, {"id": 67, "n": "Summit of Strife", "r": "Toto'haha", "k": "dungeon", "lv": [72, 77, 203, 204, 205], "sub": ["Verdant Wood", "Stormy Cape", "Moonview Cliff", "Abyssal Beach"]}, {"id": 68, "n": "Beasting Village", "r": "Toto'haha", "k": "town", "lv": [78], "sub": []}, {"id": 69, "n": "Tropu'hopu", "r": "Toto'haha", "k": "town", "lv": [79, 80, 81], "sub": ["Tropu'hopu: Floating Theater", "Tropu'hopu: Shipyard"]}, {"id": 70, "n": "Nameless Village", "r": "Toto'haha", "k": "town", "lv": [82], "sub": []}, {"id": 71, "n": "Abandoned Silver Mine", "r": "Wildlands", "k": "field", "lv": [83, 84], "sub": ["Silver Mine"]}, {"id": 72, "n": "Crackridge Harbor: Anchorage", "r": "Wildlands", "k": "field", "lv": [85], "sub": []}, {"id": 73, "n": "Southern Oresrush Wilds", "r": "Wildlands", "k": "field", "lv": [86], "sub": []}, {"id": 74, "n": "Western Crackridge Wilds", "r": "Wildlands", "k": "field", "lv": [87], "sub": []}, {"id": 75, "n": "Southern Crackridge Wilds", "r": "Wildlands", "k": "field", "lv": [88], "sub": []}, {"id": 151, "n": "Abandoned Road", "r": "Wildlands", "k": "field", "lv": [102], "sub": []}, {"id": 76, "n": "Path to the Duskruin Shrine", "r": "Wildlands", "k": "field", "lv": [89], "sub": []}, {"id": 77, "n": "Western Gravell Wilds", "r": "Wildlands", "k": "field", "lv": [90], "sub": []}, {"id": 78, "n": "Giff's Manse", "r": "Wildlands", "k": "dungeon", "lv": [91], "sub": []}, {"id": 79, "n": "Unfinished Tunnel", "r": "Wildlands", "k": "dungeon", "lv": [92], "sub": []}, {"id": 80, "n": "Bed of the Titan", "r": "Wildlands", "k": "dungeon", "lv": [94, 200], "sub": ["Path to the Bed of the Titan"]}, {"id": 152, "n": "Fellsun Ruins", "r": "Wildlands", "k": "dungeon", "lv": [103], "sub": []}, {"id": 81, "n": "Altar of the Trader", "r": "Wildlands", "k": "dungeon", "lv": [95], "sub": []}, {"id": 82, "n": "Duskruin Shrine", "r": "Wildlands", "k": "dungeon", "lv": [96, 206], "sub": ["Duskruin Shrine: Depths"]}, {"id": 83, "n": "Ivory Ravine", "r": "Wildlands", "k": "dungeon", "lv": [97], "sub": []}, {"id": 84, "n": "Oresrush", "r": "Wildlands", "k": "town", "lv": [98, 99, 100, 193, 194], "sub": ["Oresrush: Foundry"]}, {"id": 85, "n": "Crackridge", "r": "Wildlands", "k": "town", "lv": [101], "sub": []}, {"id": 86, "n": "Gravell", "r": "Wildlands", "k": "town", "lv": [104], "sub": []}, {"id": 87, "n": "Canalbrine: Path to the Water Source", "r": "Harborlands", "k": "field", "lv": [106], "sub": []}, {"id": 88, "n": "Canalbrine Bridge", "r": "Harborlands", "k": "field", "lv": [107], "sub": []}, {"id": 89, "n": "Western Canalbrine Coast", "r": "Harborlands", "k": "field", "lv": [108], "sub": []}, {"id": 91, "n": "Northern Conning Creek Coast", "r": "Harborlands", "k": "field", "lv": [110], "sub": []}, {"id": 92, "n": "Western Conning Creek Coast", "r": "Harborlands", "k": "field", "lv": [111], "sub": []}, {"id": 93, "n": "Roque Island: Anchorage", "r": "Harborlands", "k": "field", "lv": [112], "sub": []}, {"id": 94, "n": "Canalbrine: Water Source", "r": "Harborlands", "k": "dungeon", "lv": [113], "sub": []}, {"id": 95, "n": "Sacred Guard Ship", "r": "Harborlands", "k": "dungeon", "lv": [114], "sub": []}, {"id": 96, "n": "Lair of the Usurper", "r": "Harborlands", "k": "dungeon", "lv": [115], "sub": []}, {"id": 97, "n": "Cavern of the Sea God", "r": "Harborlands", "k": "dungeon", "lv": [116], "sub": []}, {"id": 98, "n": "Guard Outpost", "r": "Harborlands", "k": "dungeon", "lv": [117], "sub": []}, {"id": 99, "n": "Cavern of the Moon and Sun", "r": "Harborlands", "k": "dungeon", "lv": [118], "sub": []}, {"id": 100, "n": "Altar of the Charitable", "r": "Harborlands", "k": "dungeon", "lv": [119], "sub": []}, {"id": 101, "n": "The Roque Company", "r": "Harborlands", "k": "dungeon", "lv": [122, 192], "sub": ["The Roque Company: West Tower", "The Roque Company: East Tower"]}, {"id": 102, "n": "Canalbrine", "r": "Harborlands", "k": "town", "lv": [123], "sub": []}, {"id": 103, "n": "Conning Creek", "r": "Harborlands", "k": "town", "lv": [124, 125, 126], "sub": ["Conning Creek: Harbor", "Conning Creek: Outskirts"]}, {"id": 104, "n": "Roque Island", "r": "Harborlands", "k": "town", "lv": [127, 128], "sub": ["Roque Island: Headquarters"]}, {"id": 105, "n": "Forest Path", "r": "Leaflands", "k": "field", "lv": [129], "sub": []}, {"id": 106, "n": "Festival Grounds", "r": "Leaflands", "k": "field", "lv": [130], "sub": []}, {"id": 107, "n": "Eastern Cropdale Trail", "r": "Leaflands", "k": "field", "lv": [131], "sub": []}, {"id": 108, "n": "Southern Cropdale Trail", "r": "Leaflands", "k": "field", "lv": [132], "sub": []}, {"id": 109, "n": "Northern Wellgrove Trail", "r": "Leaflands", "k": "field", "lv": [133], "sub": []}, {"id": 110, "n": "Eastern Wellgrove Trail", "r": "Leaflands", "k": "field", "lv": [134], "sub": []}, {"id": 111, "n": "Road to Mother's Garden", "r": "Leaflands", "k": "field", "lv": [135], "sub": []}, {"id": 112, "n": "Southern Timberain Trail", "r": "Leaflands", "k": "field", "lv": [136], "sub": []}, {"id": 113, "n": "Veil of Trees", "r": "Leaflands", "k": "dungeon", "lv": [137], "sub": []}, {"id": 114, "n": "Starfall Spring", "r": "Leaflands", "k": "dungeon", "lv": [138], "sub": []}, {"id": 115, "n": "Secret Forest", "r": "Leaflands", "k": "dungeon", "lv": [139], "sub": []}, {"id": 116, "n": "Animal Trail", "r": "Leaflands", "k": "dungeon", "lv": [140, 218], "sub": ["Dark Night"]}, {"id": 117, "n": "Altar of the Lady of Grace", "r": "Leaflands", "k": "dungeon", "lv": [141], "sub": []}, {"id": 118, "n": "Timberain Castle", "r": "Leaflands", "k": "dungeon", "lv": [142, 207], "sub": ["Timberain Castle: Roof"]}, {"id": 119, "n": "Mother's Garden", "r": "Leaflands", "k": "dungeon", "lv": [143], "sub": []}, {"id": 120, "n": "House Wellows Manor", "r": "Leaflands", "k": "dungeon", "lv": [144], "sub": []}, {"id": 121, "n": "Cropdale", "r": "Leaflands", "k": "town", "lv": [145], "sub": []}, {"id": 122, "n": "Wellgrove", "r": "Leaflands", "k": "town", "lv": [146, 147, 148], "sub": ["Wellgrove: Alrond's Estate"]}, {"id": 123, "n": "Timberain", "r": "Leaflands", "k": "town", "lv": [149, 150], "sub": ["Timberain Castle: Town Square"]}, {"id": 153, "n": "Mother's Garden: Orphanage", "r": "Leaflands", "k": "field", "lv": [191], "sub": []}, {"id": 124, "n": "Frigit Isle: Entrance", "r": "Winterlands", "k": "field", "lv": [151], "sub": []}, {"id": 163, "n": "Frigit Isle: Anchorage", "r": "Winterlands", "k": "field", "lv": [198], "sub": []}, {"id": 125, "n": "Southern Cape Cold Snows", "r": "Winterlands", "k": "field", "lv": [152], "sub": []}, {"id": 126, "n": "Eastern Cape Cold Snows", "r": "Winterlands", "k": "field", "lv": [153], "sub": []}, {"id": 128, "n": "Western Winterbloom Snows", "r": "Winterlands", "k": "field", "lv": [155], "sub": []}, {"id": 129, "n": "Southern Stormhail Snows", "r": "Winterlands", "k": "field", "lv": [156], "sub": []}, {"id": 132, "n": "Prison: Underground Passage", "r": "Winterlands", "k": "dungeon", "lv": [159], "sub": []}, {"id": 133, "n": "Ruffians' Hideout", "r": "Winterlands", "k": "dungeon", "lv": [160], "sub": []}, {"id": 134, "n": "Snowhares' Den", "r": "Winterlands", "k": "dungeon", "lv": [161], "sub": []}, {"id": 135, "n": "Altar of the Scholarking", "r": "Winterlands", "k": "dungeon", "lv": [174], "sub": []}, {"id": 136, "n": "Forbidden Shrine", "r": "Winterlands", "k": "dungeon", "lv": [162], "sub": []}, {"id": 137, "n": "Castle Mei: East Tower", "r": "Winterlands", "k": "dungeon", "lv": [163, 199], "sub": ["Castle Mei: Gallows"]}, {"id": 138, "n": "Sacred Peak Altahe", "r": "Winterlands", "k": "dungeon", "lv": [164], "sub": []}, {"id": 139, "n": "Beneath the Wall", "r": "Winterlands", "k": "dungeon", "lv": [165, 229], "sub": ["Infernal Castle"]}, {"id": 140, "n": "Frigit Isle", "r": "Winterlands", "k": "town", "lv": [166, 167, 168], "sub": ["Frigit Isle: Prison", "Frigit Isle: Yard", "Frigit Isle: Mining Site"]}, {"id": 141, "n": "Cape Cold", "r": "Winterlands", "k": "town", "lv": [169], "sub": []}, {"id": 142, "n": "Winterbloom", "r": "Winterlands", "k": "town", "lv": [154, 170], "sub": ["Winterbloom: Thieves' Quarter"]}, {"id": 143, "n": "Stormhail", "r": "Winterlands", "k": "town", "lv": [158, 171, 172], "sub": ["Stormhail: Sacred Guard Headquarters", "Stormhail: Bridge"]}, {"id": 144, "n": "Stormhail: Castle Mei", "r": "Winterlands", "k": "field", "lv": [173], "sub": []}, {"id": 149, "n": "On the Water", "r": "The Sundering Sea", "k": "sea", "lv": [189], "sub": []}, {"id": 156, "n": "Lighthouse Island", "r": "The Sundering Sea", "k": "field", "lv": [219], "sub": []}, {"id": 157, "n": "The Lost Isle", "r": "The Sundering Sea", "k": "field", "lv": [220], "sub": []}, {"id": 165, "n": "???", "r": "The Sundering Sea", "k": "field", "lv": [228], "sub": []}, {"id": 158, "n": "Shipwreck of the Empress", "r": "The Sundering Sea", "k": "dungeon", "lv": [221], "sub": []}, {"id": 159, "n": "Curious Nest", "r": "The Sundering Sea", "k": "dungeon", "lv": [222], "sub": []}, {"id": 160, "n": "Nameless Isle", "r": "The Sundering Sea", "k": "dungeon", "lv": [223], "sub": []}, {"id": 161, "n": "Gate of ???", "r": "The Sundering Sea", "k": "dungeon", "lv": [224], "sub": []}, {"id": 154, "n": "Vidania", "r": "The Sundering Sea", "k": "field", "lv": [208], "sub": []}, {"id": 166, "n": "Castle Vidania", "r": "The Sundering Sea", "k": "dungeon", "lv": [209], "sub": []}];
+const vKey = v => `visit:${v.id}`;                 // stored alongside side-story ticks
+const VTYPES = [["", "All"], ["town", "Towns"], ["field", "Fields"], ["dungeon", "Dungeons"], ["sea", "At sea"]];
+const vstate = { region: "All", types: new Set(), q: "", hide: false };
+VISITS.forEach((v, i) => {
+  v.i = i;
+  const names = [v.n, ...v.sub];
+  const find = n => zoneByName.get(v.r + "|" + n) || ZONES.find(z => z.name === n) || ZONES.find(z => z.name === n.replace(/^The /, "") || z.name.endsWith(": " + n));
+  v.zs = names.map(find).filter(Boolean).filter((z, j, a) => a.indexOf(z) === j);
+  v.z = v.zs[0] || null;
+  if (v.z && v.z.type !== v.k && v.k !== "sea") v.k = v.z.type;     // the map icon sometimes differs from the place itself
+});
+// one short tag: not reached yet, or the first chapter that takes you there
+function vTag(v) {
+  const z = v.z; if (!z) return "";
+  if (reachOn() && !zReached(z)) return `<span class="tags"><span class="tag lock">Not reached yet · ${esc(zNeed(z))}</span></span>`;
+  if (!z.ch.length) return `<span class="tags"><span class="tag none">Optional</span></span>`;
+  const c = z.ch[0];
+  return `<span class="tags">${c.near ? `<span class="tag none">On the way to ${esc(c.near)}</span>` : `<span class="tag${c.c === "Throné" ? " me" : ""}">${esc(c.c)} ${esc(c.l)}<em>Lv ${c.lv}</em></span>`}</span>`;
+}
+const vRegions = [...new Set(VISITS.map(v => v.r))];
+function vOk(v, q) {
+  if (vstate.region !== "All" && v.r !== vstate.region) return false;
+  if (vstate.types.size && !vstate.types.has(v.k)) return false;
+  if (vstate.hide && qdone.has(vKey(v))) return false;
+  if (v.z && reachHide() && !zReached(v.z)) return false;
+  if (q && ![v.n, v.r, ...v.sub].join(" ").toLowerCase().includes(q)) return false;
+  return true;
+}
+function renderVisits() {
+  const q = vstate.q.trim().toLowerCase();
+  let html = "";
+  for (const r of vRegions) {
+    const list = VISITS.filter(v => v.r === r && vOk(v, q));
+    if (!list.length) continue;
+    const all = VISITS.filter(v => v.r === r), d = all.filter(v => qdone.has(vKey(v))).length;
+    html += `<h2 class="region-h" data-vr="${esc(r)}">${esc(r)} <small>${d}/${all.length}</small></h2><div class="vgrid">` + list.map(v => {
+      const on = qdone.has(vKey(v)), locked = v.z && reachOn() && !zReached(v.z);
+      const name = v.z ? `<button type="button" class="xl" data-goz="${v.z.i}">${esc(v.n)}</button>` : esc(v.n);
+      const inc = v.sub.length ? `<span class="vin">Includes ${v.sub.map((n, j) => { const z = v.zs.find(x => x.name === n); return z ? `<button type="button" class="xl" data-goz="${z.i}">${esc(n)}</button>` : esc(n); }).join(", ")}</span>` : "";
+      return `<label class="chest${locked ? " locked" : ""}" data-v="${v.i}"><input type="checkbox" data-vk="${vKey(v)}" ${on ? "checked" : ""}><span class="cl"><span class="vhd"><b>${name}</b><span class="vk">${TYPE_NAME[v.k] || v.k}</span></span>${inc}${vTag(v)}</span></label>`;
+    }).join("") + `</div>`;
+  }
+  $("#vlist").innerHTML = html || `<p class="empty">Nothing matches. Try another region or search.</p>`;
+  const d = VISITS.filter(v => qdone.has(vKey(v))).length;
+  $("#vcount").textContent = `${d} / ${VISITS.length} places`;
+  $("#vbar").style.width = (VISITS.length ? d / VISITS.length * 100 : 0) + "%";
+  $("#vregion").innerHTML = ["All", ...vRegions].map(nm => {
+    const all = VISITS.filter(v => nm === "All" || v.r === nm), dd = all.filter(v => qdone.has(vKey(v))).length;
+    return `<option value="${esc(nm)}"${vstate.region === nm ? " selected" : ""}>${nm === "All" ? "All regions" : esc(nm)}  (${dd}/${all.length})</option>`;
+  }).join("");
+  $("#vtypes").innerHTML = VTYPES.map(([t, l]) => {
+    const all = VISITS.filter(v => (!t || v.k === t) && (vstate.region === "All" || v.r === vstate.region)), dd = all.filter(v => qdone.has(vKey(v))).length;
+    const on = t ? vstate.types.has(t) : vstate.types.size === 0;
+    return `<button class="chip" type="button" data-vt="${t}" aria-pressed="${on}">${l}<small>${dd}/${all.length}</small></button>`;
+  }).join("");
+  renderVAct(); renderToc();
+}
+function renderVAct() {
+  const it = [];
+  if (vstate.q.trim()) it.push({ label: `“${vstate.q.trim()}”`, clear: () => { vstate.q = ""; $("#vq").value = ""; renderVisits(); } });
+  if (vstate.region !== "All") it.push({ label: vstate.region, clear: () => { vstate.region = "All"; renderVisits(); } });
+  vstate.types.forEach(t => it.push({ label: (VTYPES.find(x => x[0] === t) || [, t])[1], clear: () => { vstate.types.delete(t); renderVisits(); } }));
+  if (vstate.hide) it.push({ label: "Hiding visited", clear: () => { vstate.hide = false; $("#vHide").checked = false; renderVisits(); } });
+  renderAct("#vact", "#vfn", it, () => {
+    Object.assign(vstate, { region: "All", q: "", hide: false }); vstate.types.clear();
+    $("#vq").value = ""; $("#vHide").checked = false; renderVisits();
+  });
+}
+let vqt; $("#vq").addEventListener("input", e => { clearTimeout(vqt); vqt = setTimeout(() => { vstate.q = e.target.value; renderVisits(); }, 120); });
+$("#vregion").addEventListener("change", e => { vstate.region = e.target.value; renderVisits(); });
+$("#vtypes").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  const t = b.dataset.vt;
+  if (!t) vstate.types.clear(); else { vstate.types.has(t) ? vstate.types.delete(t) : vstate.types.add(t); if (vstate.types.size === VTYPES.length - 1) vstate.types.clear(); }
+  renderVisits();
+});
+$("#vHide").addEventListener("change", e => { vstate.hide = e.target.checked; renderVisits(); });
+$("#vlist").addEventListener("change", e => {
+  const k = e.target.dataset.vk; if (!k) return;
+  const v = VISITS.find(x => vKey(x) === k);
+  change(`${e.target.checked ? "Visited" : "Unticked"} ${v ? v.n : "place"}`, () => { e.target.checked ? qdone.add(k) : qdone.delete(k); });
+  if (vstate.hide) { renderVisits(); return; }
+  renderVisits();
+});
+
 // ================= Secondary jobs
 const JOBS = [{"name":"Warrior","kind":"base","main":"Hikari","region":"Hinoeuma","place":"Sai","where":"The dojo in the north of Sai.","level":null,"first":"Sai first comes up in Castti's Chapter 2 (Sai route), around level 17, and again in Agnea's Chapter 4. You can walk there any time after finishing a Chapter 1.","lic":[{"t":"Talk to the Guild Master.","steps":["Go to Sai in Hinoeuma.","Enter the dojo at the north end of town.","Talk to the Guild Master."]},{"t":"Have one character learn Brand's Blade, the Warrior divine skill.","steps":["Hikari is the quickest choice, since Warrior is already his job.","Spend JP to learn every Warrior skill; Brand's Blade comes after them.","Return to the Guild Master with that character in your party."],"when":"Whenever Hikari has the JP. Battles and JP-boosting gear speed it up."},{"t":"Have two characters in your party who know Brand's Blade.","steps":["Give a Warrior license to a second traveler (not Hikari).","Have them learn every Warrior skill too, ending with Brand's Blade.","Bring both to the Guild Master in the same party."]}]},{"name":"Hunter","kind":"base","main":"Ochette","region":"Toto'haha","place":"Western Tropu'hopu Traverse","where":"A hidden grove on the west side of Western Tropu'hopu Traverse, just north of the Beasting Bay: Anchorage exit.","level":"32+","first":"Western Tropu'hopu Traverse first comes up on the way to Tropu'hopu in Agnea's Chapter 3, around level 20. Reach Toto'haha by ferry once any Chapter 1 is done. Ferries: Canalbrine to Beasting Bay: Anchorage (1,000 leaves), New Delsta Harbor: Anchorage to Beasting Bay: Anchorage (1,500), and New Delsta Harbor: Anchorage to Crackridge Harbor: Anchorage (2,500).","lic":[{"t":"Talk to the Guild Master.","steps":["Take the ferry to Beasting Bay: Anchorage.","Head into Western Tropu'hopu Traverse and look for the grove on the west side, just north of the anchorage exit.","Talk to the Guild Master."]},{"t":"Bring a Quicksand Monster's Liver.","steps":["Travel to Sai, then west into Southern Sai Sands.","Enter Quicksand Gaol (danger level 30).","Beat the Lord of the Sands at the bottom of the sand pit. The Liver drops from it (the Rusty Axe chest is there too).","Return to the Guild Master."],"when":"Quicksand Gaol is a danger level 30 dungeon."},{"t":"Bring a Sea Monster's Whisker.","steps":["Get your own ship (how, below).","Sail to the whirlpool in the southeast of the Sundering Sea, between the eastern continent and Toto'haha.","Beat the Scourge of the Sea. The Whisker drops from it.","Return to the Guild Master."],"when":"Getting your own ship: with Partitio in the party, go to the shipyard on the east side of Tropu'hopu by day and buy the Unfinished Vessel from Terry for 100,000 leaves (a Scent of Commerce side story). It then waits at Canalbrine and every anchorage. Guides suggest the whole party be about level 35 before sailing far."}]},{"name":"Apothecary","kind":"base","main":"Castti","region":"Harborlands","place":"Conning Creek","where":"The house south of the inn in Conning Creek.","level":null,"first":"Conning Creek first comes up in Ochette's Chapter 2 (Cateracta route), around level 15, and in Osvald's Chapter 3.","lic":[{"t":"Talk to the Guild Master.","steps":["Go to Conning Creek in the Harborlands.","Enter the house south of the inn.","Talk to the Guild Master."]},{"t":"Bring 3 Herb-of-Grace Buds.","steps":["Easiest early: buy them from the black market in New Delsta Flats at night. The sellers change, so switch between day and night until one has them.","Steal them from townspeople: the Royal Gardener (Timberain Castle: Town Square), a Beastling in Nameless Village and the Explorer in the Stormhail tavern.","Steal or win them from Giant Gators in Sinking Ruins (danger level 46). There's also one in a chest there.","With a ship, three chests sit on the small island south of the whirlpool.","Hand 3 to the Guild Master."]},{"t":"Bring 3 Primeval Horn Elixirs.","steps":["Go to House Wellows Manor, south of Timberain (danger level 50).","Steal them from the Devil Deer that always appear there. Hunter's Mercy Kill (leaves 1 HP) and then Steal makes it safe.","Hand 3 to the Guild Master."],"when":"House Wellows Manor is one of the toughest dungeons; plan for the late game."}]},{"name":"Merchant","kind":"base","main":"Partitio","region":"Wildlands","place":"Western Crackridge Wilds","where":"A small camp northwest of the save point in Western Crackridge Wilds (Crackridge is to the east).","level":"34+","first":"Western Crackridge Wilds first comes up on the way to Crackridge in Temenos's Chapter 3 (Crackridge route), around level 24.","lic":[{"t":"Talk to the Guild Master.","steps":["Go to Western Crackridge Wilds, west of Crackridge.","Find the camp northwest of the save point.","Talk to the Guild Master."]},{"t":"Bring 100,000 leaves.","steps":["Save up 100,000 leaves. Selling stolen valuables (marked Prize on the steal list) helps.","Pay the Guild Master."],"when":"Guides say this gets easy around level 50 while playing the main stories."},{"t":"Bring 300,000 leaves.","steps":["Save up 300,000 leaves. Beating Caits and Octopuffs and selling valuables is the quickest way.","Pay the Guild Master."]}]},{"name":"Cleric","kind":"base","main":"Temenos","region":"Crestlands","place":"Borderfall","where":"The chapel in the northwest of Borderfall (head west from Montwise).","level":"33+","first":"Borderfall is on the way to Montwise in Hikari's Chapter 2, around level 15.","lic":[{"t":"Talk to the Guild Master.","steps":["Head west from Montwise into Borderfall.","Go to the chapel in the northwest.","Talk to the Guild Master."]},{"t":"Bring the High Priest's Amulet from Starfall Spring.","steps":["Fast travel to Cropdale and leave by Eastern Cropdale Trail.","Go to the pier below the bridge and take your boat downstream to Southern Cropdale Trail.","Follow the river to the pier that leads to a chest; the dungeon entrance is right below it.","Clear Starfall Spring (some guides call it Starfall Cave) and beat the boss.","Open the red chest at the end for the Amulet, then return to the Guild Master."],"when":"Guides call the boss fairly weak by the time you have the first license."},{"t":"Bring the High Priest's Book of Scripture from the Infernal Abyss.","steps":["Go to Beneath the Wall, near Stormhail.","Have seven in your party: your four travelers plus three NPC followers (from Allure, Hire, Guide or Befriend).","Walk onto the rope bridge; the weight breaks it and drops you into the Infernal Abyss, a hidden part of the Infernal Castle.","Beat the Dreadwolf and open the last red chest for the Book.","Return to the Guild Master."],"when":"The Dreadwolf is very strong: guides recommend level 60 or higher, even though the area says danger level 55."}]},{"name":"Scholar","kind":"base","main":"Osvald","region":"Winterlands","place":"Western Winterbloom Snows","where":"A house on a hill in the northwest of Western Winterbloom Snows, near a bridge. From Winterbloom, head west, then north.","level":"34+","first":"Western Winterbloom Snows first comes up on the way to Winterbloom in Throné's Chapter 2 (Father route), around level 16.","lic":[{"t":"Talk to the Guild Master.","steps":["Leave Winterbloom heading west into Western Winterbloom Snows.","Go north to the house on the hill near the bridge.","Talk to the Guild Master."]},{"t":"Bring 5 Ancient Sentinel Cores.","steps":["Fight Sentinels (any element) and other constructs such as Guardians and Curators.","The quickest spot is the Roque Company Factory in Clockbank (it comes up in Partitio's Chapter 2). Sunken Maw (danger level 34) has them too.","Steal them, or win them as drops. Hunter's Mercy Kill and then Steal makes the steal reliable.","Hand 5 to the Guild Master."]},{"t":"Bring 5 Almighty Soulstones.","steps":["Fight the large Elementals. Ice Elementals are common near the sparkling ice pillars in Western Winterbloom Snows and Southern Stormhail Snows, including at night right outside the guild.","Steal them, or win them as drops (Mercy Kill and then Steal again).","Hand 5 to the Guild Master."]}]},{"name":"Thief","kind":"base","main":"Throné","region":"Brightlands","place":"Clockbank: Industrial District","where":"Behind a door hidden by crates on the west side of Clockbank: Industrial District. Only open at night.","level":null,"first":"Clockbank first comes up in Partitio's Chapter 2, around level 18. It's a short walk from New Delsta, so you can reach it very early.","lic":[{"t":"Talk to the Guild Master (at night).","steps":["Go to Clockbank: Industrial District at night.","On the west side, slip through the stone archway half-hidden by crates.","Talk to the Guild Master at the thieves' meeting."]},{"t":"Bring a Thieves' Gem.","steps":["By day, find the elderly Townsperson at the Clockbank town entrance.","Steal the Thieves' Gem from him (it's on the Clockbank steal list).","Return to the Guild Master at night."]},{"t":"Bring the Master Thief's Sapphire Stone.","steps":["Get your own ship (how, below).","Sail east from Crackridge Harbor: Anchorage to the Shipwreck of the Empress (danger level 48).","Near the end, take the last staircase west to the doorway beneath the captain's quarters; the chest is in the small hold there.","Return to the Guild Master at night."],"when":"Getting your own ship: with Partitio in the party, go to the shipyard on the east side of Tropu'hopu by day and buy the Unfinished Vessel from Terry for 100,000 leaves (a Scent of Commerce side story). It then waits at Canalbrine and every anchorage. Guides suggest the whole party be about level 35 before sailing far."}]},{"name":"Dancer","kind":"base","main":"Agnea","region":"Leaflands","place":"Wellgrove","where":"A house on the upper level, in the north of Wellgrove.","level":null,"first":"Wellgrove first comes up in Hikari's Chapter 3, around level 26.","lic":[{"t":"Talk to the Guild Master.","steps":["Go to Wellgrove in the far west.","Climb to the upper level in the north of town and enter the house.","Talk to the Guild Master."]},{"t":"Have one character learn Sealticge's Seduction, the Dancer divine skill.","steps":["Agnea is the quickest choice, since Dancer is already her job.","Spend JP to learn every Dancer skill; Sealticge's Seduction comes after them.","Return to the Guild Master with that character in your party."]},{"t":"Have two characters in your party who know Sealticge's Seduction.","steps":["Give a Dancer license to a second traveler (not Agnea).","Have them learn every Dancer skill too, ending with Sealticge's Seduction.","Bring both to the Guild Master in the same party."]}]},{"name":"Inventor","kind":"advanced","main":null,"region":"Brightlands","place":"Eastern New Delsta Highroad","where":"Arkar's cabin by the river in the top-right corner of Eastern New Delsta Highroad.","level":"10+","first":"Eastern New Delsta Highroad is right next to New Delsta (Throné's Chapter 1), so this is the earliest secondary job you can get.","lic":[{"t":"Talk to Arkar in his cabin.","steps":["Leave New Delsta to the east onto Eastern New Delsta Highroad.","Follow the river to the top-right corner of the map and enter the lone cabin.","Talk to Arkar; the Inventor job is yours."]}],"skills":"Bring Arkar the materials he asks for and he builds new inventions. Inventor skills apply to the whole party and cost no JP."},{"name":"Armsmaster","kind":"advanced","main":null,"region":"Wildlands","place":"Gravell","where":"Porta's house, the first house as you enter Gravell. A Debt Collector blocks the door.","level":null,"first":"Gravell is the far north of the Wildlands and only comes up in Osvald's Chapter 5 (level 45), but you can walk there sooner. The earliest Rusty weapons are the Rusty Staff (Seat of the Water Sprite, danger level 26), the Rusty Sword (side story The Sword in the Stone) and the Rusty Axe (Quicksand Gaol, danger level 30).","lic":[{"t":"Bring Porta one Rusty weapon.","steps":["In Gravell, knock out the Debt Collector at Porta's door with a fight path action (Ambush, Challenge, Provoke or Soothe).","Talk to Porta, the retired blacksmith (this starts the side story In Search of the Divine Weapons).","Find any Rusty weapon. Quick options: the Rusty Staff in Seat of the Water Sprite (sail north into the cave behind the waterfall east of Borderfall), or the Rusty Sword from The Sword in the Stone in Winterbloom.","Give it to Porta. She forges a divine weapon and the job unlocks."]}],"skills":"Each Rusty weapon becomes another divine weapon, and its skill is learned by the whole party. The Armsmaster needs that divine weapon equipped to use the skill. Rusty weapons: Axe (Quicksand Gaol), Bow (Sinking Ruins), Dagger (Shipwreck of the Empress), Polearm (Timberain Castle: Town Square), Staff (Seat of the Water Sprite) and Sword (The Sword in the Stone)."},{"name":"Arcanist","kind":"advanced","main":null,"region":"The Sundering Sea","place":"The Lost Isle","where":"The Lost Isle, northeast of the whirlpool (danger level 45).","level":null,"first":"Needs your own ship and a win against the Scourge of the Sea, so it's late game. Getting your own ship: with Partitio in the party, go to the shipyard on the east side of Tropu'hopu by day and buy the Unfinished Vessel from Terry for 100,000 leaves (a Scent of Commerce side story). It then waits at Canalbrine and every anchorage. Guides suggest the whole party be about level 35 before sailing far.","lic":[{"t":"Find the Arcanist Descendant on The Lost Isle.","steps":["Get your own ship.","Sail to the whirlpool and beat the Scourge of the Sea to open the way.","Sail northeast to The Lost Isle and climb the ladder.","Go to the sign north of the entrance, then from the upper-left corner of that platform walk west along the invisible path.","Talk to the Arcanist Descendant."]}]},{"name":"Conjurer","kind":"advanced","main":null,"region":"Hinoeuma","place":"Ku","where":"The Five-Tiered Tower in Ku.","level":null,"first":"Only after you finish all of Hikari's story (his Chapter 5 is around level 45).","lic":[{"t":"Beat the Conjurer of the Tower in the Five-Tiered Tower.","steps":["Finish Hikari's final chapter so Ku is open.","Enter the Five-Tiered Tower.","Climb all five floors. Each has a boss, with a save point between them.","Beat the Conjurer of the Tower at the top to unlock the job."]}]}];
 const jstate = { q: "", kind: "", hide: false };
@@ -1703,6 +1845,8 @@ function applyViews() {
   $("#togs").hidden = tab !== "zones";
   $("#v-quests").hidden = tab !== "sidestories";
   $("#v-jobs").hidden = tab !== "jobs";
+  $("#v-visits").hidden = tab !== "visits";
+  if (tab === "visits") renderVisits();
   if (tab === "jobs") renderJobs();
   if (tab === "zones") renderZones(); else $("#v-zones").hidden = true;
   setAppbarHeight();
@@ -1722,12 +1866,13 @@ document.querySelectorAll(".tog").forEach(t => t.addEventListener("click", () =>
     const saved2 = JSON.parse(localStorage.getItem(LS + "-shown2") || "null");
     const saved = saved2 || JSON.parse(localStorage.getItem(LS + "-shown") || "null");
     if (Array.isArray(saved)) shown = new Set(PARTS.filter(x => saved.includes(x) || (!saved2 && x === "hidden")));
-    const t = localStorage.getItem(LS + "-tab"); if (t === "zones" || t === "sidestories" || t === "jobs") tab = t;
+    const t = localStorage.getItem(LS + "-tab"); if (t === "zones" || t === "sidestories" || t === "jobs" || t === "visits") tab = t;
   } catch (e) {}
   const h = (location.hash || "").replace("#", "");
   if (h === "sidestories") tab = "sidestories";
   else if (h === "info" || h === "scrutinize") { tab = "zones"; shown.add("hidden"); shown = new Set(PARTS.filter(x => shown.has(x))); zstate.icats.add("any"); }
   else if (h === "jobs") tab = "jobs";
+  else if (h === "visits" || h === "visited") tab = "visits";
   else if (h === "zones" || h === "all") tab = "zones";
   else if (PARTS.includes(h)) { tab = "zones"; shown = new Set([h]); }
   applyViews();
@@ -1752,6 +1897,8 @@ function palIndex() {
         out.push({ kind: "zone", z, label: c.l, sub: `Chest · ${z.name}`, hay: c.l.toLowerCase(), weight: 3, tkey: `${z.tre.ri}.${z.tre.ai}.${ci}` }));
       if (showHid()) z.hid.forEach(x => out.push({ kind: "zone", z, label: x.e.i, sub: `${ICAT_ONE[x.e.c] || "Info"} · ask ${x.e.n} · ${z.name}`, hay: (x.e.i + " " + x.e.n).toLowerCase(), weight: 3, hkey: x.key }));
     });
+  } else if (tab === "visits") {
+    VISITS.forEach(v => out.push({ kind: "visit", v, label: v.n, sub: `World map · ${v.r}${v.sub.length ? " · " + v.sub.slice(0, 2).join(", ") : ""}`, hay: [v.n, ...v.sub].join(" ").toLowerCase(), weight: 0 }));
   } else if (tab === "jobs") {
     JOBS.forEach((j, i) => out.push({ kind: "job", i, label: j.name, sub: `${j.kind === "base" ? "Guild job" : "Advanced job"} · ${j.place}, ${j.region}`, hay: `${j.name} ${j.place} ${j.main || ""}`.toLowerCase(), weight: 0 }));
   } else {
@@ -1826,6 +1973,13 @@ function goInfo(ri, ti, x) {
   if (!z) return;
   goZone(z.i, { hkey: x ? x.key : null });
 }
+function goVisit(v) {
+  goTab("visits");
+  Object.assign(vstate, { region: "All", q: "", hide: false }); vstate.types.clear(); $("#vq").value = ""; $("#vHide").checked = false;
+  renderVisits();
+  const el = document.querySelector(`#vlist label[data-v="${v.i}"]`);
+  if (el) { el.scrollIntoView({ block: "center", behavior: smooth() }); flashEl(el); el.querySelector("input")?.focus({ preventScroll: true }); }
+}
 function goQuest(i) {
   const x = QUESTS[i]; if (!x) return;
   goTab("sidestories");
@@ -1841,6 +1995,7 @@ function palGo(it) {
   palClose();
   if (it.kind === "zone") goZone(it.z.i, { key: it.key, tkey: it.tkey, hkey: it.hkey });
   else if (it.kind === "job") goJob(it.i);
+  else if (it.kind === "visit") goVisit(it.v);
   else goQuest(it.x.i);
 }
 $("#jumpBtn").addEventListener("click", palOpen);
@@ -1854,7 +2009,7 @@ $("#palq").addEventListener("keydown", e => {
 $("#pallist").addEventListener("mousedown", e => { const li = e.target.closest("li[data-i]"); if (li) { e.preventDefault(); palGo(palItems[Number(li.dataset.i)]); } });
 $("#pal").addEventListener("mousedown", e => { if (e.target.id === "pal") palClose(); });
 // ================= Filter panels: search stays out, the rest folds away; active filters show as removable chips
-const FP = { z: "zfb", q: "qfb", j: "jfb" };
+const FP = { z: "zfb", q: "qfb", j: "jfb", v: "vfb" };
 let fpOpen = {};
 try { fpOpen = JSON.parse(localStorage.getItem(LS + "-fp") || "{}") || {}; } catch (e) {}
 function setFP(k, open) {
@@ -1878,7 +2033,7 @@ function actClick(e) {
   const el = e.currentTarget;
   if (b.dataset.a === "all") el._clear(); else el._items[Number(b.dataset.a)]?.clear();
 }
-["#zact", "#qact", "#jact"].forEach(id => $(id).addEventListener("click", actClick));
+["#zact", "#qact", "#jact", "#vact"].forEach(id => $(id).addEventListener("click", actClick));
 function renderZAct() {
   const it = [];
   if (zstate.q.trim()) it.push({ label: `“${zstate.q.trim()}”`, clear: () => { zstate.q = ""; $("#zq").value = ""; renderZones(); } });
@@ -2123,6 +2278,9 @@ function saveFindings(d) {
   for (const [k, list] of Object.entries(M.s)) if (list.some(([u, s]) => ((ne.get(u) || {}).IsPurchasedItem || [])[s])) found.done.add(k);
   for (const [k, list] of Object.entries(M.i)) if (list.some(u => (ne.get(u) || {}).HearFlag)) found.idone.add(k);
   for (const [n, list] of Object.entries(M.q)) if (list.some(([a, i]) => ((sub[a] || {}).MissionState || [])[i] === 2)) found.qdone.add(n);
+  // the save keeps one bit per area you've been to (by the game's level number)
+  const vm = d.VisitedMap || [], been = id => ((vm[id >> 5] >>> (id & 31)) & 1) === 1;
+  for (const v of VISITS) if (v.lv.some(been)) found.qdone.add(vKey(v));
   if (M.ch) {
     // a chapter counts as finished when every part of it is done (some chapters come in two or three parts)
     const st = new Map((d.MainStoryData || []).map(x => [x && x.StoryID, x && x.State]));
@@ -2145,6 +2303,7 @@ function keyLabel(kind, k) {
     if (kind === "done") { const [ri, ti, ni, ii] = k.split(".").map(Number); const t = DATA[ri].towns[ti], n = t.npcs[ni]; return `${n.i[ii]} (${n.n}, ${t.name})`; }
     if (kind === "tdone") { const [ri, ai, ci] = k.split(".").map(Number); const a = TREASURE[ri].areas[ai]; return `${a.c[ci].l} chest (${a.name})`; }
     if (kind === "idone") { const x = IBYKEY.get(k); return x ? `${x.e.i} (${x.e.n}, ${x.t.name})` : k; }
+    if (kind === "qdone" && k.startsWith("visit:")) { const v = VISITS.find(x => vKey(x) === k); return v ? `Visited ${v.n}` : k; }
     if (kind === "qdone") return k;
   } catch (e) {}
   return k;
@@ -2152,7 +2311,7 @@ function keyLabel(kind, k) {
 // Compare the save with the current ticks: what it adds, and which of my ticks it disagrees with
 function saveCompare(fd) {
   const M = SAVEMAP;
-  const known = { done: Object.keys(M.s), tdone: Object.keys(M.c), idone: Object.keys(M.i), qdone: Object.keys(M.q) };
+  const known = { done: Object.keys(M.s), tdone: Object.keys(M.c), idone: Object.keys(M.i), qdone: [...Object.keys(M.q), ...VISITS.map(vKey)] };
   const have = { done, tdone, idone, qdone };
   const add = {}, drop = {};
   for (const kind of Object.keys(known)) {
@@ -2169,11 +2328,13 @@ function saveCompare(fd) {
 function renderSaveBox() {
   const p = pendingSave, box = $("#saveBox"); if (!p) return;
   const { fd, cmp } = p;
-  const line = (lbl1, lbl, set, kind) => `<li><b>${set.size}</b> ${set.size === 1 ? lbl1 : lbl}${set.size ? ` <span class="muted">(${cmp.add[kind].length} not ticked yet)</span>` : ""}</li>`;
+  const line = (lbl1, lbl, set, kind, f = () => true) => { const n = [...set].filter(f).length, a = cmp.add[kind].filter(f).length; return `<li><b>${n}</b> ${n === 1 ? lbl1 : lbl}${n ? ` <span class="muted">(${a} not ticked yet)</span>` : ""}</li>`; };
+  const isV = k => k.startsWith("visit:"), notV = k => !isV(k);
   const found = `<p>Your save shows:</p><ul class="savefound">
     ${line("chest opened", "chests opened", fd.tdone, "tdone")}
     ${line("item stolen or bought", "items stolen or bought", fd.done, "done")}
-    ${line("side story finished", "side stories finished", fd.qdone, "qdone")}
+    ${line("side story finished", "side stories finished", fd.qdone, "qdone", notV)}
+    ${line("place on the world map visited", "places on the world map visited", fd.qdone, "qdone", isV)}
     ${line("person questioned for info", "people questioned for info", fd.idone, "idone")}
     <li>Chapters: ${Object.entries(fd.story).filter(([, v]) => v).map(([c, v]) => `${esc(c)} Ch ${v}`).join(", ") || "none finished yet"}</li></ul>`;
   if (p.step === "confirm") {
@@ -2363,9 +2524,9 @@ document.addEventListener("keydown", e => {
   if (e.key === "?") { e.preventDefault(); ovl ? ovlClose() : ovlOpen("help"); return; }
   if (ovl) return;
   if (e.key === "/") { e.preventDefault(); palOpen(); return; }
-  const tabsK = { "1": "zones", "2": "sidestories", "3": "jobs" };
+  const tabsK = { "1": "zones", "2": "sidestories", "3": "jobs", "4": "visits" };
   if (tabsK[e.key]) { e.preventDefault(); tab = tabsK[e.key]; applyViews(); window.scrollTo(0, 0); return; }
-  const k = e.key.toLowerCase(), cur = { zones: "z", sidestories: "q", jobs: "j" }[tab];
+  const k = e.key.toLowerCase(), cur = { zones: "z", sidestories: "q", jobs: "j", visits: "v" }[tab];
   if (k === "s") { e.preventDefault(); const q = $("#" + cur + "q"); q.focus(); q.select?.(); return; }
   if (k === "f") { e.preventDefault(); setFP(cur, !fpOpen[cur]); return; }
   if (k === "p") { e.preventDefault(); renderProg(); renderMe(); ovlOpen("me"); return; }
