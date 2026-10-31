@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Suikoden II</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap">
+<style>
+/* Layout: a field journal that follows the story. Sticky app bar with two views, a progress strip,
+   then one card per stop on the route (first visits and returns), each listing who to recruit and what to pick up. */
+:root{
+  --bg:#eef0f4; --surface:#ffffff; --sunk:#e3e6ee; --ink:#1b2033; --muted:#5d6479;
+  --line:#cfd4e0; --accent:#1f3a8a; --coin:#a8780f; --coin-ink:#7d5800; --coin-bg:#f6ecd2; --done:#62687c;
+  --warn:#9a3412; --warn-bg:#fdecdf;
+  --display:"IM Fell English SC", "Iowan Old Style", Georgia, serif;
+  --body:"Alegreya Sans", "Gill Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme:light;
+  padding-top:env(safe-area-inset-top); padding-bottom:env(safe-area-inset-bottom);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e1120; --surface:#161a2d; --sunk:#1d2238; --ink:#e7e9f2; --muted:#9aa1b8;
+  --line:#2b3150; --accent:#9db4ff; --coin:#e3b54a; --coin-ink:#e3b54a; --coin-bg:#2e2715; --done:#868ca5;
+  --warn:#fdba8c; --warn-bg:#3a2216; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0e1120; --surface:#161a2d; --sunk:#1d2238; --ink:#e7e9f2; --muted:#9aa1b8;
+  --line:#2b3150; --accent:#9db4ff; --coin:#e3b54a; --coin-ink:#e3b54a; --coin-bg:#2e2715; --done:#868ca5;
+  --warn:#fdba8c; --warn-bg:#3a2216; color-scheme:dark }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button{font:inherit}
+
+/* app bar */
+.appbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.appbar-in{max-width:1000px;margin:0 auto;padding:8px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:6px 16px;flex-wrap:wrap}
+.homelink{color:var(--muted);text-decoration:none;font-size:1.2rem;padding:0 4px 8px 0}
+.homelink:hover{color:var(--accent)}
+.brand{font-family:var(--display);font-weight:400;font-size:1.35rem;margin:0;padding-bottom:8px;white-space:nowrap}
+.tabs{display:flex;gap:2px;flex:1 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none}
+.tab{background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);padding:6px 12px 9px;cursor:pointer;white-space:nowrap;font-size:.95rem}
+.tab:hover{color:var(--ink)}
+.tab[aria-current="page"]{color:var(--ink);border-bottom-color:var(--coin);font-weight:700}
+.sync{font-size:.75rem;color:var(--muted);padding-bottom:8px;white-space:nowrap}
+.authbtn,.themebtn{font-size:.85rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:4px 12px;cursor:pointer;white-space:nowrap;margin-bottom:8px}
+.authbtn:hover,.themebtn:hover{border-color:var(--accent)}
+.authbtn.out{color:var(--muted)}
+.themebtn .ti{font-family:"Segoe UI Symbol","Apple Symbols",system-ui,sans-serif}
+
+.wrap{max-width:1000px;margin:0 auto;padding:18px max(16px,env(safe-area-inset-right,0px)) 64px max(16px,env(safe-area-inset-left,0px))}
+
+/* progress strip */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;display:flex;flex-direction:column;gap:6px}
+.stat .lab{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.stat .lab b{font-family:var(--display);font-weight:400;font-size:1.15rem}
+.stat .lab span{font-variant-numeric:tabular-nums;color:var(--muted)}
+.bar{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--coin);width:0;transition:width .3s}
+.stat.stars .bar>i{background:var(--accent)}
+.intro{color:var(--muted);margin:12px 0 0;max-width:72ch;font-size:.95rem}
+
+/* controls */
+.controls{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.row{display:flex;gap:10px 16px;flex-wrap:wrap;align-items:center}
+.row input[type=search]{flex:1 1 240px;min-width:0;font:inherit;padding:7px 11px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+.toggle{display:flex;align-items:center;gap:6px;font-size:.9rem;color:var(--muted);cursor:pointer;user-select:none}
+.toggle input{accent-color:var(--accent);width:16px;height:16px;margin:0}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:5px 12px;font-size:.88rem;cursor:pointer;white-space:nowrap}
+.chip:hover{border-color:var(--accent)}
+.chip small{color:var(--muted);font-variant-numeric:tabular-nums;margin-left:4px}
+.chip.full small{color:var(--coin-ink);font-weight:700}
+
+/* chapters and stops */
+main{margin-top:8px}
+.chapter{margin-top:26px;scroll-margin-top:110px}
+.ch-h{font-family:var(--display);font-weight:400;font-size:1.6rem;margin:0;color:var(--accent);display:flex;align-items:baseline;gap:6px 12px;flex-wrap:wrap}
+.ch-h small{font-family:var(--body);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ch-s{color:var(--muted);margin:2px 0 10px;font-size:.92rem;max-width:72ch}
+.stops{display:flex;flex-direction:column;gap:10px}
+details.stop{background:var(--surface);border:1px solid var(--line);border-radius:10px;scroll-margin-top:110px}
+details.stop>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:6px 12px;padding:11px 14px;flex-wrap:wrap}
+details.stop>summary::-webkit-details-marker{display:none}
+.sn{font-family:var(--display);font-size:1.22rem;flex:1 1 auto;min-width:0}
+.sn::before{content:"▸";display:inline-block;width:1em;color:var(--muted);transition:transform .15s}
+details[open]>summary .sn::before{transform:rotate(90deg)}
+.sn .vis{font-family:var(--body);font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-left:8px;white-space:nowrap}
+.badges{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.bd{font-size:.78rem;font-variant-numeric:tabular-nums;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:0 7px;background:var(--sunk);white-space:nowrap}
+.bd.full{color:var(--coin-ink);border-color:var(--coin);background:var(--coin-bg);font-weight:700}
+.bd.miss{color:var(--warn);border-color:var(--warn);background:var(--warn-bg)}
+details.stop.done>summary .sn{color:var(--done)}
+.body{border-top:1px solid var(--line);padding:4px 14px 12px;display:flex;flex-direction:column;gap:10px}
+.note{margin:6px 0 0;color:var(--muted);font-size:.92rem;max-width:75ch}
+.warns{margin:6px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+.warns li{font-size:.9rem;color:var(--warn);background:var(--warn-bg);border-radius:6px;padding:4px 10px;max-width:80ch}
+.warns li::before{content:"⚠ "}
+.grp h4{margin:6px 0 4px;font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.list{display:flex;flex-direction:column}
+.it{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;padding:6px 0;border-top:1px dashed var(--line);cursor:pointer;align-items:start}
+.list .it:first-child{border-top:0}
+.it input{accent-color:var(--coin);width:18px;height:18px;margin:2px 0 0}
+.grp.rec .it input{accent-color:var(--accent)}
+.it .top{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline}
+.it .nm{font-weight:700}
+.grp.tre .it .nm{font-weight:500}
+.it .how{grid-column:2;color:var(--muted);font-size:.9rem;max-width:75ch}
+.it input:checked~.top .nm{color:var(--done);text-decoration:line-through;text-decoration-color:var(--done)}
+.it input:checked~.how{opacity:.7}
+.tg{font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;padding:1px 6px;font-weight:700;white-space:nowrap}
+.tg.m{color:var(--warn);background:var(--warn-bg)}
+.tg.a{color:var(--muted);background:var(--sunk)}
+.tg.c{color:var(--accent);border:1px solid var(--accent);padding:0 5px}
+.tg.b{color:var(--muted);border:1px dashed var(--line);padding:0 5px}
+.tg.r{color:var(--coin-ink);background:var(--coin-bg)}
+.boss{font-size:.9rem;color:var(--muted);margin:2px 0 0}
+.boss b{color:var(--ink);font-weight:500}
+.empty{color:var(--muted);text-align:center;padding:30px 0}
+
+/* stars view */
+.roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;margin-top:14px}
+.rs{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 10px;cursor:pointer;align-items:start}
+.rs input{accent-color:var(--accent);width:18px;height:18px;margin:3px 0 0}
+.rs .nm{font-weight:700}
+.rs .wh{grid-column:2;color:var(--muted);font-size:.85rem}
+.rs .wh a{color:var(--accent)}
+.rs.got{opacity:.65}
+.rs.got .nm{text-decoration:line-through;text-decoration-color:var(--done)}
+.rs .top{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline}
+
+.foot{margin-top:36px;color:var(--muted);font-size:.85rem;max-width:72ch}
+.foot a{color:var(--accent)}
+.foot ul{padding-left:1.2em;margin:6px 0}
+.reset{font-size:.85rem;background:none;border:1px solid var(--line);color:var(--muted);border-radius:6px;padding:4px 10px;cursor:pointer}
+.reset:hover{border-color:var(--warn);color:var(--warn)}
+@media (max-width:560px){ .sync{order:5;flex-basis:100%;padding-bottom:6px} .brand{font-size:1.2rem} }
+@media (prefers-reduced-motion:reduce){ .bar>i,.sn::before{transition:none} }
+</style>
+<script>try{var t=localStorage.getItem("rumgames-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+</head>
+<body>
+<header class="appbar">
+  <div class="appbar-in">
+    <a class="homelink" href="../" title="Game Stuff home" aria-label="Game Stuff home">←</a>
+    <h1 class="brand">Suikoden II</h1>
+    <nav class="tabs" aria-label="Views">
+      <button type="button" class="tab" data-tab="route" aria-current="page">Story route</button>
+      <button type="button" class="tab" data-tab="stars">108 Stars</button>
+    </nav>
+    <span class="sync" id="sync">Saved in this browser</span>
+    <button type="button" class="authbtn" id="authBtn" hidden>Sign in to sync</button>
+    <button type="button" class="themebtn" id="themeBtn"><span class="ti" aria-hidden="true">◐</span> <span class="tl">Auto</span></button>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="stats" aria-label="Progress">
+    <div class="stat stars"><div class="lab"><b>Stars of Destiny</b><span id="starCt">0 / 108</span></div><div class="bar"><i id="starBar"></i></div></div>
+    <div class="stat"><div class="lab"><b>Treasure</b><span id="treCt">0 / 0</span></div><div class="bar"><i id="treBar"></i></div></div>
+  </section>
+
+  <div id="routeView">
+    <p class="intro">Every stop in story order, first visits and the trips back. Each one lists who you can recruit there right now and what to pick up. Recruits marked <span class="tg m">Missable</span> have a deadline, and <span class="tg c">Castle Lv 2</span> means your headquarters has to have grown that far first.</p>
+    <div class="controls">
+      <div class="row">
+        <input type="search" id="q" placeholder="Search a place, character or item…" aria-label="Search the route">
+        <label class="toggle"><input type="checkbox" id="hideDone"> Hide what's done</label>
+        <label class="toggle"><input type="checkbox" id="onlyMiss"> Only missables</label>
+      </div>
+      <div class="chips" id="chips" aria-label="Jump to a chapter"></div>
+    </div>
+    <main id="route"></main>
+  </div>
+
+  <div id="starsView" hidden>
+    <div class="controls">
+      <div class="row">
+        <input type="search" id="sq" placeholder="Search a character…" aria-label="Search the Stars">
+        <label class="toggle"><input type="checkbox" id="sMissing"> Only ones I still need</label>
+      </div>
+    </div>
+    <div class="roster" id="roster"></div>
+  </div>
+
+  <footer class="foot">
+    <p>Your ticks save in this browser, or follow you to every device if you sign in with Discord.</p>
+    <p><b>Thanks to</b> the guide writers this checklist stands on:</p>
+    <ul>
+      <li><a href="https://game8.co/games/Suikoden-2/archives/494319" target="_blank" rel="noopener">Game8's Suikoden 2 walkthrough</a>: the story route, chest locations and recruit conditions</li>
+      <li><a href="https://gensopedia.org/w/108_Stars" target="_blank" rel="noopener">Gensopedia</a>: the full roster of the 108 Stars</li>
+      <li><a href="https://publish.obsidian.md/taniynquest/Clippings/Suikoden+II+Recruitment+Guide" target="_blank" rel="noopener">Suikoden II recruitment guide</a>: second chances and deadlines</li>
+      <li><a href="https://suikoden.fandom.com/wiki/Rakutei_Mountain" target="_blank" rel="noopener">Suikoden Wiki</a>: Rakutei Mountain and Kobold Village items</li>
+    </ul>
+    <p>Spotted a mistake? <a href="https://github.com/rumm0r/game-checklists/issues" target="_blank" rel="noopener">Open an issue</a>.</p>
+    <p><span id="resetBox"><button type="button" class="reset" id="resetBtn">Clear all ticks</button></span></p>
+    <p>A fan-made project, not affiliated with Konami. Suikoden II belongs to Konami.</p>
+  </footer>
+</div>
+
+<script>
+// ================= Data
+// Stars: id → display name. Exactly 108 entries; three of them stand for a choice the game makes you take.
+const STARS = {
+  hero:"Hero (Riou)", nanami:"Nanami", mukumuku:"Mukumuku", gengen:"Gengen", rikimaru:"Rikimaru", millie:"Millie",
+  zamza:"Zamza", apple:"Apple", hanna:"Hanna", tsai:"Tsai", kinnison:"Kinnison", shiro:"Shiro", tuta:"Tuta", anita:"Anita",
+  clive:"Clive", gilbert:"Gilbert", templeton:"Templeton", eilie:"Eilie", rina:"Rina", bolgan:"Bolgan",
+  viktor:"Viktor", flik:"Flik", freed:"Freed Yamamoto", shu:"Shu", leona:"Leona", luc:"Luc", huan:"Huan", barbara:"Barbara",
+  amada:"Amada", richmond:"Richmond", yoshino:"Yoshino", taiho:"Tai Ho", yamkoo:"Yam Koo", oulan:"Oulan", taki:"Taki",
+  chaco:"Chaco", fitcher:"Fitcher", ridley:"Ridley (or Boris)", hans:"Hans", tetsu:"Tetsu", hix:"Hix", tengaar:"Tengaar", shilo:"Shilo",
+  haiyo:"Hai Yo", stallion:"Stallion", alex:"Alex", hilda:"Hilda", adlai:"Adlai", emilia:"Emilia", teresa:"Teresa", nina:"Nina", shin:"Shin",
+  jeane:"Jeane", gabocha:"Gabocha", sid:"Sid", yuzu:"Yuzu", meg:"Meg", gadget:"Gadget", wakaba:"Wakaba", tony:"Tony", viki:"Viki",
+  humphrey:"Humphrey", futch:"Futch", camus:"Camus", miklotov:"Miklotov", kiba:"Kiba", klaus:"Klaus",
+  kasval:"Kasumi or Valeria", sheena:"Sheena", lorelai:"Lorelai", gordon:"Gordon", mondo:"Mondo", sasuke:"Sasuke", tomo:"Tomo",
+  badeaux:"Badeaux", feather:"Feather", ayda:"Ayda", connell:"Connell", sigabi:"Sigfried or Abizboah", lebrante:"Lebrante", simone:"Simone",
+  bob:"Bob", maximillian:"Maximillian", killey:"Killey", annallee:"Annallee", karen:"Karen", hoi:"Hoi",
+  lcchan:"Long Chan-Chan", tenkou:"Tenkou", raura:"Raura", kahn:"Kahn", sierra:"Sierra", gijimu:"Gijimu", lowen:"Lo Wen", koyu:"Koyu",
+  marlowe:"Marlowe", hauser:"Hauser", jess:"Jess", georg:"Georg Prime", mazus:"Mazus",
+  gantetsu:"Gantetsu", pico:"Pico", alberto:"Alberto", jude:"Jude", tessai:"Tessai", genshu:"Genshu", vincent:"Vincent", pesmerga:"Pesmerga",
+};
+// Characters who join but aren't one of the 108
+const BONUS = { mcdohl:"Tir McDohl", rulodia:"Rulodia", chuchara:"Chuchara" };
+
+// Route: chapters → stops. A stop is one visit to a place.
+// r: recruits [id, how, flags]  flags: m = missable, a = joins on their own, 2/3/4 = castle level, x = second chance
+// i: treasure [item, where]  (an item marked with * is bought or traded for rather than found)
+const ROUTE = [
+{ t:"The Unicorn Brigade", s:"From the camp at Tenzan Pass to the escape from Kyaro.", stops:[
+  { n:"Tenzan Pass", v:"Prologue", r:[["hero","You, from the start.","a"]],
+    note:"Winning 108 battles before the opening plays out turns the opening movie to full colour." },
+  { n:"Mercenary Fortress", v:"Captured", note:"A story stop: escape with the rope, flint and oily rag from the fortress chores. Nothing to keep yet." },
+  { n:"North Sparrow Pass", i:[["Fire Wall","Chest on the left path at the first fork, by the hot spring"],["Escape Talisman","Chest on the right path at the first fork"],["Chest Plate","Chest on the right path at the next split"],["Wind Feather Ornament","On the right path after the boss"]],
+    boss:"Mist Shade (weak to fire)" },
+  { n:"Kyaro Town", r:[["mukumuku","Examine the big tree behind the dojo three times, before you go and find Nanami.","m"],["nanami","Joins after the escape from Kyaro.","a"]],
+    i:[["Medium Vase","One of three vases in a house. Worth a lot once appraised"]],
+    warn:["Mukumuku is easiest here. If you miss him there's a later random chance between Greenhill and Muse."] },
+  { n:"Mercenary Fortress", v:"Return", r:[["gengen","Joins when you get back from Kyaro.","a"]] },
+]},
+{ t:"Ryube and Toto", s:"Errands for the fortress, and Highland's first strike.", stops:[
+  { n:"Ryube Village", r:[["rikimaru","Out cold at the inn. Pay his 3,000 potch meal tab.","m"],["millie","Agree to find her pet Bonaparte, then beat him in Ryube Forest (east path)."]],
+    warn:["If you skip Rikimaru here, you can pay his tab again at Coronet later."] },
+  { n:"Ryube Forest", v:"First visit", boss:"Bonaparte (weak to fire)" },
+  { n:"Toto Village", r:[["zamza","At the inn, talk to him with Nanami in the party.","m"]],
+    warn:["If you miss Zamza, you get a second chance at South Window after the Radat battle."] },
+  { n:"Muse City", v:"First visit", note:"Buy the Wooden Amulet at the item shop (or sell Jowy's ring to afford it)." },
+  { n:"Toto Village", v:"Return", r:[["apple","Joins after what happens at Toto.","a"],["hanna","Talk to her in Toto before heading back to the fortress."]] },
+  { n:"Ryube Forest", v:"Return", r:[["tsai","At his house at the end of the right path.","a"],["kinnison","Put the fallen bird back in its nest, leave the forest, come back a few minutes later and talk to him. Shiro comes too.","m"],["shiro","Joins with Kinnison.","m"]],
+    i:[["Leather Cape","One of two chests at the second fork, left path"],["Gauntlets","The other chest at that fork"]] },
+  { n:"Toto Cave shrine", note:"A story stop: Leknaat gives out the Bright Shield and Black Sword Runes." },
+]},
+{ t:"Muse and the road south", s:"The Muse alliance, Sindar Ruins and Coronet.", stops:[
+  { n:"Sindar Ruins", i:[["Mega Medicine","Chest on the left path"],["Stone of Magic","Chest on the left path"],["Angry Blow Scroll","Chest on the left side of the canal"],["Gauntlets","Chest north across the bridge"],["Shoulder Pads","Chest in the Round Plate room"],["Fire Lizard Orb","End of the path past the two-headed snake statue"],["Chain Mail","Across the canal to the north once it's drained"],["Water Orb","Chest south of the Square Plate corner"],["Magic Absorb Orb","Chest on the path right of the snake statue"],["Old Book Vol. 2","Chest on the path right of the snake statue"]],
+    boss:"Double Head (weak to fire)" },
+  { n:"Muse City", v:"The alliance", r:[["tuta","South of City Hall after Jess's first job."],["anita","At Leona's tavern. Talk to her, leave and come back, and repeat until she offers to join."],["clive","Answer Elza in the alley north-east of the city, right of the Appraisal Shop. This starts Clive's chase; he joins at South Window later.","m"],["gilbert","In the army battle, attack his unit until he falls back. Don't destroy it.","m"]],
+    i:[["Recipe #3","From Huan outside City Hall"],["Sound Set #1","From Elza at the city entrance"],["Highland Uniform","Reward for taking Jess's spying job"]],
+    warn:["Clive's chase runs on a play-time clock. Turn off the Event Timer in the remaster's settings or keep moving.","Save before the army battle. If Gilbert's unit is wiped out you lose him for good."] },
+  { n:"Highland garrison", i:[["Circlet","Chest on the right path, east, in the forest"],["Belt of Strength","Chest on the north-west path at the fork"],["Fire Sealing Orb","Chest by the brown tent in the garrison"]] },
+  { n:"Mercenary Fortress", v:"Return", r:[["templeton","Find him at the fortress and follow him to Toto, then talk to him. He waits if you're busy."]],
+    i:[["Suiko Map","From Templeton"]] },
+  { n:"Coronet Town", r:[["eilie","Joins at the tavern after you beat Tai Ho at Chinchirorin.","a"],["rina","Joins with Eilie.","a"],["bolgan","Joins with Eilie.","a"]],
+    i:[["Recipe #5","Man in the downstairs room of the inn"]] },
+]},
+{ t:"South Window to Two River", s:"Granmeyer, North Window, Radat, and the river towns.", stops:[
+  { n:"South Window City", r:[["viktor","Rejoins on arrival.","a"],["flik","Joins at the inn.","a"],["freed","Joins after you meet Granmeyer at City Hall.","a"]] },
+  { n:"Cave of the Wind", i:[["Sun Badge","Hidden north-west path at the odd-looking fork"],["Fish Badge","South-west path, then left and up"],["Fire Wall","Right path, then left at the split"],["Pale Gate Rune","Upper-left of the four-rock puzzle"],["Medicine","Upper-left of the four-rock puzzle"],["3,000 potch","Upper-left of the four-rock puzzle"],["Stone of Protection","South at the three-way split"],["Half Helmet","Left path at the three-way split"]],
+    boss:"Celestial Sword" },
+  { n:"North Window Castle", i:[["Fire Rune","Right path just inside"],["Stone of Magic Protection","Ground floor, right side of the main hall"],["Darkness Rune","Hidden middle door in the gargoyle room"],["Blue Ribbon","Behind the candle door: light the bottom candles to match the top"],["Chain Mail","Upper floor"],["Collar","Upper floor"]],
+    boss:"Abomination (weak to fire and holy)" },
+  { n:"Radat Town", r:[["shu","His house, once you've found the silver coin in the river. Apple must be travelling with you.","a"],["leona","Joins after the battle with Solon Jhee's army.","a"],["luc","Joins the morning after the battle.","a"],["huan","Joins the morning after the battle.","a"],["barbara","Joins the morning after the battle.","a"],["amada","After agreeing to take Fitcher to Two River, beat Amada in the duel at the bridge."],["richmond","Lose his coin toss, get a plain coin from the man by the tavern, then toss again with it."],["yoshino","Talk to her with Freed in the party."]],
+    i:[["Recipe #14","The chef in the white hat at the tavern"]],
+    warn:["Bring Freed when you leave headquarters, or you'll have to come back for Yoshino."] },
+  { n:"Kuskus Town", r:[["taiho","Beat him at Chinchirorin in the hut by the docks and win 5,000 potch. Save first."],["yamkoo","Joins with Tai Ho."],["oulan","Come with only women in the party besides you. Talk to the old woman at the entrance, then head west over the bridge."]] },
+  { n:"Lakewest Town", r:[["taki","Talk to her in the upper-left house a few times."]],
+    i:[["Recipe #16","Spice rack in the upper-left house"],["Kindness Rune","Vegetable basket at the docks"]] },
+  { n:"Two River City", r:[["chaco","Joins after you drive Highland out of the city.","a"],["fitcher","Joins after Two River is saved.","a"],["ridley","Joins after Two River is saved.","a"],["hans","In the room next to yours at the inn, the next morning. Let him open his shop for free; asking for money makes him take much longer."]],
+    i:[["Spinach Seedling","Granny Susu's house in the Winger District. Can't be got later"],["Fried Tacos*","Item shop in the Kobold District. You'll need these for Tetsu"]] },
+  { n:"Two River Sewers", i:[["Headgear","Right side of the main sewer"],["Resurrection Orb","Past the second plank, north"],["Healing Wind","Further along the sewer"],["Fire Emblem","Chest across the plank going north"],["Stone of Protection","Chest across the plank going north"]],
+    boss:"Pest Rat" },
+]},
+{ t:"Building the castle", s:"Your headquarters grows. Loop back for everyone who's turned up.", stops:[
+  { n:"Headquarters", r:[["haiyo","In the kitchen area once the castle has grown.","2"]] },
+  { n:"Lakewest Town", v:"Return", r:[["tetsu","Eat Fried Tacos in battle until you're Toasty, then talk to him in the north-west house."],["hix","Talk to Hix and Tengaar at the inn, then help Hix at Kobold Village.","2"],["tengaar","Joins with Hix.","2"],["shilo","Win 5,000 potch from him at Chinchirorin at the inn.","2"]] },
+  { n:"Kobold Village", note:"Hix's trial (started at the Lakewest inn) happens here.",
+    i:[["Recipe #13","Someone in the elder's house"],["Exertion Orb","The big jar beside the elder's house"]] },
+  { n:"Radat Town", v:"Return", r:[["stallion","Run from 50 battles (Run Away or Let Go), then challenge him to a race.","2"]] },
+  { n:"South Window City", v:"Return", r:[["alex","Upstairs at the inn.",""],["hilda","Joins with Alex.",""],["adlai","North-east of the trade shop. Bring a Wooden Shield, a Wind Crystal and a Sacrificial Jizo, then throw the crystal at him."],["clive","Finish the duel with Clive here after the boat trip from Kuskus.","m"],["zamza","Second chance if you missed him in Toto: Nanami in the party.","x"]] },
+]},
+{ t:"Greenhill", s:"Undercover at the academy, then out through the forest.", stops:[
+  { n:"Greenhill City", r:[["emilia","After the academy tour, come back and tell her what you were really doing.","2"]],
+    i:[["Recipe #20","The cook at the inn"],["Old Book Vol. 5","Bookshelf in the north-west room, academy ground floor"],["Recipe #25*","Sometimes in the item shop's Rare Finds"]] },
+  { n:"Greenhill Forest", r:[["teresa","Joins as you get out of Greenhill.","a"],["nina","Joins as you get out of Greenhill.","a"],["shin","Joins as you get out of Greenhill.","a"]],
+    i:[["Protection Mist","Right path at the fork"],["Silver Hat","North path from the first corner past the cabin"],["Toe Shoes","South path from that same corner"],["Chimera Orb","Chest on the right near the exit"]] },
+  { n:"Two River City", v:"Return", r:[["jeane","At the rune shop.","2"],["gabocha","First house right of the Kobold District item shop, with Gengen in the party.","2"],["sid","Secret room in the sewers (left, down the first ladder) with Chaco in the party.","2"]] },
+  { n:"Kobold Village", v:"Return", r:[["yuzu","Find her three lost sheep, then let her live at your castle. Needs Hix and Tengaar recruited.","2"]] },
+  { n:"Muse–Greenhill checkpoint", r:[["meg","Talk to her at the checkpoint east of Greenhill.","2"],["gadget","Joins with Meg.","2"],["mukumuku","Second chance if you missed him in Kyaro: walk between Greenhill and Muse with an empty party slot until he shows up in a battle.","x"]],
+    note:"Once Mukumuku's with you, the same trick finds his four cousins between Greenhill and Two River and south of Forest Village." },
+]},
+{ t:"Matilda", s:"The knights of Matilda, Rockaxe, and Muse.", stops:[
+  { n:"Forest Village", r:[["wakaba","In front of the armour shop once you're level 30 or higher.","2"],["tony","Talk to him twice in the elder's house.","2"]] },
+  { n:"Forest Path to Matilda", r:[["viki","East of the chests. Say she can stay at your place.","a"]],
+    i:[["Guard Ring","Chest north, past Badeaux"],["Mega Medicine","Chest on the left over the next two screens"],["Dragon Armor","North-east path over the next two screens"]] },
+  { n:"Highway Village", r:[["humphrey","Stay the night at the inn, then come back and help him on Rakutei Mountain.","m"],["futch","Joins with Humphrey.","m"]],
+    i:[["Recipe #32","Woman in the middle house"]],
+    warn:["Do Humphrey and Futch before you go on to Muse. Matilda shuts for most of the game after that."] },
+  { n:"Rakutei Mountain", i:[["Fur Cape","On the climb"],["Thunder Runner Scroll","On the climb"],["Thunder Amulet","On the climb"],["Stone of Power","On the climb"],["Dragon Plans #2","On the climb"],["2,000 potch","On the climb"],["Medicine Rune","On the climb"],["Unicorn Plans #2","On the climb"],["Skill Ring","On the climb"]],
+    note:"Only reachable during Humphrey's errand.", boss:"Harpy" },
+  { n:"Rockaxe Town", i:[["Violence Orb","The cabinet upstairs in the Appraisal Shop"]] },
+  { n:"Muse City", v:"The fall", r:[["camus","Joins after the business at Rockaxe and Muse.","a"],["miklotov","Joins with Camus.","a"]] },
+]},
+{ t:"Radat, Banner and Gregminster", s:"Kiba's army, then over the pass to Toran.", stops:[
+  { n:"Radat Town", v:"Kiba's army", r:[["kiba","After you beat his army, talk him round instead of executing him.","m"],["klaus","Joins with his father.","m"]],
+    warn:["If Kiba and Klaus are executed you can't get all 108."] },
+  { n:"Banner Village", i:[["Alertness Orb","Barrel left of the item shop"],["Seed Potato","Woman in the house north of the inn"],["Rose Brooch*","Item shop Rare Finds. Simone needs this"]] },
+  { n:"Banner Pass", i:[["Mega Medicine","Northern path at the first fork"],["Full Helmet","Right path at the second fork"],["Stone of Luck","By the first ladder, left"],["Wing Ornament","North of the ladders"],["Magic Ring","West of the second ladder"],["Poison Orb","Near the last ladder"],["Silver Shield","Upper path by the save point"],["Silverlet","Lower path by the save point"],["Window Set #1","Dropped by the tigers here. Tenkou needs a Window Set"]],
+    boss:"Worm" },
+  { n:"Gregminster", r:[["kasval","At the meeting with President Lepant, choose one of them as your general. Kasumi opens Rokkaku sooner.","a"],["sheena","Joins after the meeting with Lepant.","a"],["lorelai","North-west of the city.","3"],["gordon","At the trade shop. Earn 50,000 potch profit from trading, then talk to him again.","3"]],
+    i:[["Copper Hammer","The soldier on the right in the palace"],["Old Book Vol. 7","Upper-left bookshelf in the palace"],["Cyclone Orb","Sarah, upstairs at the inn"],["Celadon Urn*","Trade shop. Lebrante wants it"],["Tomato Seedling*","Man in green above the trade shop, 700 potch"]] },
+  { n:"Rokkaku Hamlet", r:[["mondo","Hidden way in on the fourth screen of the forest path to Gregminster (in Banner Pass, in the trees south of the ladders). Castle Lv 3 with Kasumi, Lv 4 with Valeria.","3"],["sasuke","With Kasumi, talk to him near the trading post with her in the party. With Valeria, he comes after Mondo.","3"]],
+    i:[["Blinking Orb","Man outside Hanzo's house"]] },
+  { n:"Ryube Forest", v:"Return", r:[["tomo","Bring Tsai to his old house.","3"]] },
+  { n:"Forest Village and the path to Matilda", v:"Return", r:[["badeaux","On the forest path, talk to him with an animal (Shiro or Mukumuku) in the party. He gives you two Listening Crystals.","3"],["feather","At the trading post, save the griffin and use a Listening Crystal on her.","m"],["ayda","Joins with Feather.","m"],["connell","House above the inn. Bring a Sound Set.","3"],["sigabi","Pick one: Sigfried, at the Path of the Unicorn by Kobold Village with a pure maiden in the party (not Sierra) and a Listening Crystal. Or keep the crystal for Abizboah in the Tinto Mines later.","m"]],
+    warn:["You only get two Listening Crystals. Use one on Feather (Ayda comes with her) and the other on Sigfried or Abizboah, not both."] },
+  { n:"Radat Town", v:"Return", r:[["lebrante","Appraisal shop. Say you need his help, then talk again while holding the Celadon Urn.","3"],["simone","At the sluice gate, with the Rose Brooch.","3"]] },
+]},
+{ t:"After Luca", s:"Highland's prince is gone. Lots of people are ready to talk now.", stops:[
+  { n:"South Window City", v:"Return", r:[["maximillian","Talk to him in town.","3"],["killey","In front of the trade shop. Mention Alex and the Sindar Ruins, talk to Alex at headquarters, then keep asking Killey.","3"],["annallee","Find her at the inn, follow her to the square right of City Hall and listen to her song.","3"]] },
+  { n:"Kuskus Town", v:"Return", r:[["karen","At the inn by the stage. Agree to dance and match her steps.","3"]] },
+  { n:"Radat Town", v:"Return", r:[["hoi","Help him out against the locals at the tavern.","3"]] },
+  { n:"Coronet Town", v:"Return", r:[["rikimaru","Second chance if you skipped him in Ryube: pay his tab again.","x"]],
+    warn:["The White Tigers between Coronet and Muse drop the Double-Beat Rune. This is your last trip through there."] },
+  { n:"Banner Village", v:"Optional", r:[["mcdohl","Only with a Suikoden I clear save loaded. He turns up here; finish his errand and he joins. Not one of the 108.","b"]] },
+  { n:"Drakemouth Village", i:[["Master's Robe","Chest at the second split, right"],["Cabbage Seeds","Inside the barn"],["Calf*","Farmer by the right-hand barn, 6,000 potch"],["Window Set #2","Dropped by the Air Lizards around here"]] },
+  { n:"Tigermouth Village", i:[["Chick","By the well. Raise it at your ranch"],["Tomato Seedling","Man in a brown coat by the well"],["Old Book Vol. 8","Bookshelf in the house south of the village"]] },
+  { n:"Crom Village", r:[["lcchan","Talk to him at the tavern with Wakaba in the party, then again behind the house right of the inn.","2"],["tenkou","House on the east side. Have a Window Set, and when he asks to buy it, ask him to join instead.","3"]],
+    i:[["Sunbeam Rune","Northern house"]] },
+  { n:"Tinto City", r:[["raura","Outside Gustav's house. Mention Jeane (she has to be recruited).","3"]],
+    i:[["Power Ring","The square minecart near the armoury"],["Unicorn Plans #3","Man in the left house south-east of the armoury"],["Dragon Plans #3","Man in the right house south-east of the armoury"],["Mother Earth Rune","From Gustav before you leave"]],
+    warn:["When Nanami asks you to run away, say they need you. Running kills Ridley (Boris takes his star) and leads to a bad ending."] },
+  { n:"Tinto Mines", v:"First visit", i:[["Cape of Darkness","Chest at the right-hand split"]] },
+  { n:"Tigermouth Village", v:"Return", r:[["sierra","Beat her, then she joins once Neclord is dealt with.","a"]], boss:"Sierra" },
+  { n:"Tinto City", v:"Neclord", r:[["jess","After Neclord, accept his apology and say you'll fight together.","m"],["kahn","Joins after Neclord.","a"],["gijimu","Joins after Neclord.","a"],["lowen","Joins after Neclord.","a"],["koyu","Joins after Neclord.","a"],["marlowe","Joins after Neclord.","a"],["hauser","Joins after Neclord.","a"]],
+    boss:"Neclord (weak to holy; let Viktor go first)", warn:["Turning Jess down means you can't get all 108."] },
+  { n:"Tinto Mines", v:"Return", r:[["sigabi","If you kept your second Listening Crystal for Abizboah: use it at the pool near the entrance. His family follows.","o"],["rulodia","Comes with Abizboah's family. Not one of the 108.","b"],["mazus","In the save point room.","4"]],
+    i:[["Dancing Flames","Left path at the split, north then right"],["Full Helmet","First of two chests on the right"],["Stone of Magic Protection","Second of those two chests"],["Master's Garb","Up and left from the grey slope"],["Old Book Vol. 9","Under the second stone bridge"],["Window Set #5","Under the second stone bridge"],["Silver Collar","South of the entrance in the big mine hall"],["Mega Medicine","South of the entrance in the big mine hall"],["Double-Strike Rune","South-west after the rightmost slide"],["Star Earrings","Above the save point"],["Wind Hat","Slide right from the save point"]],
+    boss:"Stone Golem (weak to lightning)", note:"Bring an Escape Talisman to get out." },
+  { n:"Tigermouth mountain path", r:[["georg","At the campfire on the lower path.","3"]] },
+]},
+{ t:"Liberating Greenhill", s:"Back through the forest to free the city.", stops:[
+  { n:"Greenhill Forest", v:"Return", i:[["Winged Boots","First of two chests on the right path"],["Dream Robe","Second of those two chests"],["Stone of Skill","After a left turn on the main path"]] },
+  { n:"Greenhill City", v:"Return", r:[["pico","At the inn. Ask about Annallee (recruit her first).","3"],["jude","Talk to him in the forge classroom at the academy, then bring him clay from a villager in Forest Village.","3"]],
+    i:[["Old Book Vol. 10","Man downstairs in the dormitory"],["Rage Rune","Woman in the rune classroom"],["Silver Hammer","Student on the right in the forge classroom"],["Window Set #6*","Item shop Rare Finds"],["Rabbit Plans #4*","Item shop Rare Finds"]],
+    boss:"Bone Dragon (weak to holy and wind)" },
+  { n:"Forest Village", v:"Return", i:[["Sound Set #7","Girl in the house above the inn"],["Old Book Vol. 6","Old man at the trading post"]] },
+  { n:"South Window City", v:"Return", r:[["gantetsu","Win the arm-wrestle. Bring your strongest party (combined strength around 400).","3"]] },
+  { n:"Tinto City", v:"Return", r:[["alberto","At the armour shop, ask him about Annallee (needs Annallee and Pico).","3"]] },
+  { n:"Kuskus Town", v:"Return", r:[["tessai","At the blacksmith, with Viktor in the party.","3"]] },
+  { n:"Two River City", v:"Return", r:[["bob","Kobold District, once you have 80 or more Stars.","3"]] },
+  { n:"Castle level 4 round", v:"Late recruits", r:[["genshu","Ride the boat from Kuskus to Coronet with someone carrying a level 14 weapon, and talk to him there.","4"],["vincent","Radat sluice gate, with Simone in the party.","4"],["pesmerga","At the very end of the Cave of the Wind.","4"],["mazus","Tinto Mines save point room, if you haven't already.","4x"],["chuchara","Abizboah's family at your docks. Not one of the 108.","b"]] },
+]},
+{ t:"The last push", s:"Muse, Rockaxe Castle, L'Renouille and the end.", stops:[
+  { n:"Muse City", v:"Liberation", boss:"Golden Wolf", note:"Don't fight the extra wolves after the boss; leave by the entrance." },
+  { n:"Headquarters", v:"Check in", r:[["hans","If you asked him for money, look for him back in his Two River inn room now.","x"]],
+    note:"Check the Stone Tablet: Leknaat only appears in the Great Hall if all 108 are there. That's the road to the best ending." },
+  { n:"Rockaxe Castle", i:[["Stone of Speed","Chest near the first ladder"],["Escape Talisman","Right path after that ladder"],["Stone of Luck","Behind the brown door past the second ladder"],["Crimson Cape","Behind that same door"],["Earth Shield","Past the candle hallway, right path"],["Power Gloves","Down the ladder and south"],["Gold Collar","Sleeping quarters"],["Mega Medicine","Sleeping quarters"],["Full Helmet","Above the sleeping quarters"],["Dragon Plans #4","Room with two chests (north-west stairs, then east)"],["Unicorn Plans #4","Same room"],["Thunder Rune","Guard past the Gordeau fight area"],["Earth Armor","Chest past the Gordeau area"],["Recipe #37","Bookshelf near the Earth Armor"],["Recipe #36","Dropped by Highland archers"],["Old Book Vol. 11","Basement of the town's item and armour shops"]],
+    boss:"Gordeau", warn:["At the third prompt in the big Rockaxe scene there's a hidden 3-second timer: pick the top option fast. It matters for the best ending."] },
+  { n:"Sajah Village", i:[["Windspun Armor*","Item shop Rare Finds"],["Horned Helmet*","Item shop Rare Finds"],["Golden Hammer*","Item shop Rare Finds. Lets Tessai sharpen to level 16"]],
+    note:"North-west of L'Renouille. Bring Clive to finish his story." },
+  { n:"L'Renouille", i:[["Fog Robe","Room on the right after the forced battle, north path"],["Bolt of Wrath","Same room"],["Fury Rune","Storage room off the west hall"],["Champion's Orb","Chest in the chapel"],["Wind Amulet","Chest in the chapel"],["Stone of Power","Armoury, up the north stairs"],["Stone of Protection","Armoury"],["Escape Talisman","Right-hand room in the three-room hall"],["Goldlets","End of the outside path, south"],["Window Set #7","Up the north stairs"]],
+    boss:"Lucia, Han, Seed and Culgan, the Beast Rune" },
+  { n:"Kyaro and Tenzan Pass", i:[["Hunter Orb","The big tree on the path to Genkaku's house"],["Trio Painting","The same tree"],["30 potch","The same tree"]],
+    note:"The tree items only appear if you refuse at the final choice. For the best ending: all 108 Stars, refuse, then defend every turn in the last duel." },
+]},
+];
+</script>
+<script>
+// ================= Build
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const LS = "suikoden2-checklist-v1";
+
+// Give every stop and treasure a stable id
+const STOPS = [];
+ROUTE.forEach((ch, ci) => {
+  ch.id = "ch" + (ci + 1);
+  const seen = {};
+  ch.stops.forEach(st => {
+    let base = slug(st.n + (st.v ? "-" + st.v : ""));
+    seen[base] = (seen[base] || 0) + 1; if (seen[base] > 1) base += "-" + seen[base];
+    st.id = ch.id + "-" + base; st.ch = ch;
+    st.r = st.r || []; st.i = st.i || [];
+    const iseen = {};
+    st.items = st.i.map(([raw, w]) => {
+      const bought = raw.endsWith("*"), n = bought ? raw.slice(0, -1) : raw;
+      let id = st.id + ":" + slug(n); iseen[id] = (iseen[id] || 0) + 1; if (iseen[id] > 1) id += "-" + iseen[id];
+      return { id, n, w, bought };
+    });
+    st.recs = st.r.map(([id, how, f = ""]) => ({ id, how, m: f.includes("m"), a: f.includes("a"), x: f.includes("x"), b: f.includes("b"), o: f.includes("o"), cl: (f.match(/[234]/) || [""])[0] }));
+    STOPS.push(st);
+  });
+});
+const ALLITEMS = STOPS.flatMap(s => s.items);
+// First place each Star is listed (their "home" stop)
+const HOME = {};
+STOPS.forEach(st => st.recs.forEach(r => { if (!HOME[r.id] && !r.x && !r.o) HOME[r.id] = { st, r }; }));
+STOPS.forEach(st => st.recs.forEach(r => { if (!HOME[r.id]) HOME[r.id] = { st, r }; }));
+const STAR_IDS = Object.keys(STARS);
+const nameOf = id => STARS[id] || BONUS[id] || id;
+// Sanity checks for anyone editing the data
+(function check() {
+  const bad = [];
+  if (STAR_IDS.length !== 108) bad.push(`${STAR_IDS.length} Stars listed, expected 108`);
+  STAR_IDS.forEach(id => { if (!HOME[id]) bad.push(`Star "${id}" isn't placed on the route`); });
+  STOPS.forEach(st => st.recs.forEach(r => { if (!STARS[r.id] && !BONUS[r.id]) bad.push(`Unknown recruit id "${r.id}" at ${st.n}`); }));
+  if (bad.length) console.warn("Suikoden II data:", bad);
+})();
+
+// ================= Saving: this browser first, then the signed-in account
+let stars = new Set(), tre = new Set();
+try { stars = new Set(JSON.parse(localStorage.getItem(LS + "-stars") || "[]")); } catch (e) {}
+try { tre = new Set(JSON.parse(localStorage.getItem(LS + "-treasure") || "[]")); } catch (e) {}
+const REMOTES = [];
+let writing = false, pending = false, timer = null;
+function saveLocal() {
+  try {
+    localStorage.setItem(LS + "-stars", JSON.stringify([...stars]));
+    localStorage.setItem(LS + "-treasure", JSON.stringify([...tre]));
+  } catch (e) {}
+}
+function setSync(t) { $("#sync").textContent = t; }
+const payload = () => ({ stars: [...stars], treasure: [...tre], updated: new Date().toISOString() });
+async function flush() {
+  if (!REMOTES.length) return;
+  if (writing) { pending = true; return; }
+  writing = true;
+  const p = payload();
+  for (const r of REMOTES) { try { await r.write(p); setSync(r.ok); } catch (e) { setSync("Saved in this browser (sync failed)"); } }
+  writing = false;
+  if (pending) { pending = false; flush(); }
+}
+function save() { saveLocal(); clearTimeout(timer); timer = setTimeout(flush, 700); }
+// Combine progress from the account with this browser's. Returns true if the account copy is missing something.
+function mergeIn(d) {
+  d = d || {};
+  const arr = v => Array.isArray(v) ? v : [];
+  const rS = arr(d.stars), rT = arr(d.treasure);
+  const mS = new Set([...rS, ...stars]), mT = new Set([...rT, ...tre]);
+  const changed = mS.size !== rS.length || mT.size !== rT.length;
+  stars = mS; tre = mT; saveLocal(); renderAll();
+  return changed;
+}
+const hasLocalProgress = () => stars.size || tre.size;
+
+// ================= View state
+let view = "route";
+const opts = { q: "", hideDone: false, onlyMiss: false, sq: "", sMissing: false };
+let openStops = null;
+try { const o = JSON.parse(localStorage.getItem(LS + "-open") || "null"); if (Array.isArray(o)) openStops = new Set(o); } catch (e) {}
+try { const v = localStorage.getItem(LS + "-view"); if (v === "stars") view = v; } catch (e) {}
+try { const o = JSON.parse(localStorage.getItem(LS + "-opts") || "{}"); opts.hideDone = !!o.hideDone; opts.onlyMiss = !!o.onlyMiss; opts.sMissing = !!o.sMissing; } catch (e) {}
+function saveView() {
+  try {
+    localStorage.setItem(LS + "-view", view);
+    localStorage.setItem(LS + "-opts", JSON.stringify({ hideDone: opts.hideDone, onlyMiss: opts.onlyMiss, sMissing: opts.sMissing }));
+    if (openStops) localStorage.setItem(LS + "-open", JSON.stringify([...openStops]));
+  } catch (e) {}
+}
+
+// ================= Helpers
+const recDone = r => stars.has(r.id);
+const stopTotals = st => {
+  const rs = st.recs.filter(r => !r.b), its = st.items;
+  return { rDone: rs.filter(recDone).length, rAll: rs.length, iDone: its.filter(i => tre.has(i.id)).length, iAll: its.length,
+           missLeft: st.recs.filter(r => r.m && !recDone(r)).length };
+};
+const stopComplete = st => { const t = stopTotals(st); return t.rDone === t.rAll && t.iDone === t.iAll; };
+function tags(r) {
+  let h = "";
+  if (r.m) h += `<span class="tg m">Missable</span>`;
+  if (r.x) h += `<span class="tg r">Second chance</span>`;
+  if (r.o) h += `<span class="tg r">The other option</span>`;
+  if (r.cl) h += `<span class="tg c">Castle Lv ${r.cl}</span>`;
+  if (r.a) h += `<span class="tg a">Joins on their own</span>`;
+  if (r.b) h += `<span class="tg b">Not a Star</span>`;
+  return h;
+}
+function matches(st, q) {
+  if (!q) return null; // no filtering
+  const hit = s => s && s.toLowerCase().includes(q);
+  const stopHit = hit(st.n) || hit(st.v);
+  return {
+    stop: stopHit,
+    recs: st.recs.filter(r => stopHit || hit(nameOf(r.id)) || hit(r.how)),
+    items: st.items.filter(i => stopHit || hit(i.n) || hit(i.w)),
+  };
+}
+
+// ================= Route view
+function renderRoute() {
+  const q = opts.q.trim().toLowerCase();
+  const out = [];
+  let firstOpenable = null;
+  for (const ch of ROUTE) {
+    const parts = [];
+    for (const st of ch.stops) {
+      const m = matches(st, q);
+      let recs = m ? m.recs : st.recs, items = m ? m.items : st.items;
+      if (opts.onlyMiss) { recs = recs.filter(r => r.m && !recDone(r)); items = []; }
+      if (opts.hideDone) { recs = recs.filter(r => !recDone(r)); items = items.filter(i => !tre.has(i.id)); }
+      const filtering = q || opts.onlyMiss || opts.hideDone;
+      const hasNotes = !!(st.note || st.warn || st.boss);
+      if (filtering && !recs.length && !items.length && !(m && m.stop && !opts.onlyMiss && !opts.hideDone)) continue;
+      if (!filtering && !recs.length && !items.length && !hasNotes) continue;
+      const t = stopTotals(st), complete = (t.rAll + t.iAll) > 0 && stopComplete(st);
+      if (!complete && !firstOpenable && (t.rAll + t.iAll) > 0) firstOpenable = st.id;
+      let badges = "";
+      if (t.rAll) badges += `<span class="bd${t.rDone === t.rAll ? " full" : ""}" title="Stars recruited here">★ ${t.rDone}/${t.rAll}</span>`;
+      if (t.iAll) badges += `<span class="bd${t.iDone === t.iAll ? " full" : ""}" title="Treasure picked up here">◆ ${t.iDone}/${t.iAll}</span>`;
+      if (t.missLeft) badges += `<span class="bd miss" title="Missable recruits still to get">${t.missLeft} missable</span>`;
+      let body = "";
+      if (st.note) body += `<p class="note">${esc(st.note)}</p>`;
+      if (st.warn) body += `<ul class="warns">${st.warn.map(w => `<li>${esc(w)}</li>`).join("")}</ul>`;
+      if (recs.length) body += `<div class="grp rec"><h4>Recruit</h4><div class="list">${recs.map(r => `
+        <label class="it"><input type="checkbox" data-star="${r.id}"${recDone(r) ? " checked" : ""}>
+          <span class="top"><span class="nm">${esc(nameOf(r.id))}</span>${tags(r)}</span>
+          <span class="how">${esc(r.how)}</span></label>`).join("")}</div></div>`;
+      if (items.length) body += `<div class="grp tre"><h4>Treasure</h4><div class="list">${items.map(i => `
+        <label class="it"><input type="checkbox" data-item="${i.id}"${tre.has(i.id) ? " checked" : ""}>
+          <span class="top"><span class="nm">${esc(i.n)}</span>${i.bought ? `<span class="tg a">Buy</span>` : ""}</span>
+          <span class="how">${esc(i.w)}</span></label>`).join("")}</div></div>`;
+      if (st.boss) body += `<p class="boss">Boss: <b>${esc(st.boss)}</b></p>`;
+      parts.push({ st, complete, html: `<summary><span class="sn">${esc(st.n)}${st.v ? `<span class="vis">${esc(st.v)}</span>` : ""}</span><span class="badges">${badges}</span></summary><div class="body">${body}</div>` });
+    }
+    if (!parts.length) continue;
+    out.push(`<section class="chapter" id="${ch.id}"><h2 class="ch-h">${esc(ch.t)} <small>Part ${ch.id.slice(2)}</small></h2><p class="ch-s">${esc(ch.s)}</p><div class="stops">` +
+      parts.map(p => {
+        const forced = q || opts.onlyMiss;
+        const open = forced || (openStops ? openStops.has(p.st.id) : p.st.id === firstOpenable);
+        return `<details class="stop${p.complete ? " done" : ""}" id="${p.st.id}" data-stop="${p.st.id}"${open ? " open" : ""}>${p.html}</details>`;
+      }).join("") + `</div></section>`);
+  }
+  $("#route").innerHTML = out.join("") || `<p class="empty">Nothing matches. Try another search or turn a filter off.</p>`;
+  renderChips();
+}
+function renderChips() {
+  $("#chips").innerHTML = ROUTE.map(ch => {
+    const rs = ch.stops.flatMap(s => s.recs.filter(r => !r.b)), its = ch.stops.flatMap(s => s.items);
+    const d = rs.filter(recDone).length + its.filter(i => tre.has(i.id)).length, all = rs.length + its.length;
+    return `<button type="button" class="chip${d === all ? " full" : ""}" data-jump="${ch.id}">${esc(ch.t)}<small>${d}/${all}</small></button>`;
+  }).join("");
+}
+
+// ================= Stars view
+function renderStars() {
+  const q = opts.sq.trim().toLowerCase();
+  const ids = [...STAR_IDS, ...Object.keys(BONUS)];
+  const order = new Map(); STOPS.forEach((st, i) => st.recs.forEach(r => { if (!order.has(r.id)) order.set(r.id, i); }));
+  ids.sort((a, b) => (order.get(a) ?? 999) - (order.get(b) ?? 999));
+  const rows = ids.filter(id => {
+    if (opts.sMissing && stars.has(id)) return false;
+    if (!q) return true;
+    const h = HOME[id];
+    return nameOf(id).toLowerCase().includes(q) || (h && (h.st.n.toLowerCase().includes(q) || h.r.how.toLowerCase().includes(q)));
+  }).map(id => {
+    const h = HOME[id], got = stars.has(id), bonus = !STARS[id];
+    const again = STOPS.flatMap(st => st.recs.filter(r => r.id === id && r !== (h && h.r)).map(() => st));
+    return `<label class="rs${got ? " got" : ""}"><input type="checkbox" data-star="${id}"${got ? " checked" : ""}>
+      <span class="top"><span class="nm">${esc(nameOf(id))}</span>${h ? tags({ ...h.r, x: false, o: false }) : ""}${bonus ? "" : ""}</span>
+      <span class="wh">${h ? `<a href="#${h.st.id}" data-goto="${h.st.id}">${esc(h.st.n)}${h.st.v ? " · " + esc(h.st.v) : ""}</a> (${esc(h.st.ch.t)}): ${esc(h.r.how)}` : ""}${again.length ? ` Also: ${again.map(s => `<a href="#${s.id}" data-goto="${s.id}">${esc(s.n)}</a>`).join(", ")}.` : ""}</span></label>`;
+  });
+  $("#roster").innerHTML = rows.join("") || `<p class="empty">${opts.sMissing && !q ? "All 108 Stars are with you. Go and see Leknaat." : "Nobody matches that search."}</p>`;
+}
+
+// ================= Totals and tabs
+function renderTotals() {
+  const sd = STAR_IDS.filter(id => stars.has(id)).length, td = ALLITEMS.filter(i => tre.has(i.id)).length;
+  $("#starCt").textContent = `${sd} / 108`; $("#starBar").style.width = (sd / 108 * 100) + "%";
+  $("#treCt").textContent = `${td} / ${ALLITEMS.length}`; $("#treBar").style.width = (td / ALLITEMS.length * 100) + "%";
+}
+function renderAll() { renderTotals(); if (view === "route") renderRoute(); else renderStars(); }
+function setView(v) {
+  view = v;
+  document.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-current", b.dataset.tab === v ? "page" : "false"));
+  $("#routeView").hidden = v !== "route"; $("#starsView").hidden = v !== "stars";
+  saveView(); renderAll();
+}
+
+// ================= Events
+document.addEventListener("change", e => {
+  const t = e.target;
+  if (t.dataset.star) {
+    if (t.checked) stars.add(t.dataset.star); else stars.delete(t.dataset.star);
+    // keep every copy of this person (first visit, second chances, roster) in step
+    document.querySelectorAll(`input[data-star="${t.dataset.star}"]`).forEach(x => x.checked = t.checked);
+    save(); afterTick(t);
+  } else if (t.dataset.item) {
+    if (t.checked) tre.add(t.dataset.item); else tre.delete(t.dataset.item);
+    save(); afterTick(t);
+  }
+});
+// Update counts in place so the list doesn't jump while you tick
+function afterTick(t) {
+  renderTotals();
+  if (view === "stars") { if (opts.sMissing) renderStars(); else t.closest(".rs")?.classList.toggle("got", t.checked); return; }
+  if (opts.hideDone || opts.onlyMiss) { setTimeout(renderRoute, 350); return; }
+  const det = t.closest("details.stop");
+  if (det) {
+    const st = STOPS.find(s => s.id === det.dataset.stop), tt = stopTotals(st);
+    let badges = "";
+    if (tt.rAll) badges += `<span class="bd${tt.rDone === tt.rAll ? " full" : ""}" title="Stars recruited here">★ ${tt.rDone}/${tt.rAll}</span>`;
+    if (tt.iAll) badges += `<span class="bd${tt.iDone === tt.iAll ? " full" : ""}" title="Treasure picked up here">◆ ${tt.iDone}/${tt.iAll}</span>`;
+    if (tt.missLeft) badges += `<span class="bd miss" title="Missable recruits still to get">${tt.missLeft} missable</span>`;
+    det.querySelector(".badges").innerHTML = badges;
+    det.classList.toggle("done", stopComplete(st));
+  }
+  // a Star can appear at more than one stop
+  if (t.dataset.star) document.querySelectorAll("details.stop").forEach(d => {
+    if (d === det || !d.querySelector(`input[data-star="${t.dataset.star}"]`)) return;
+    const st = STOPS.find(s => s.id === d.dataset.stop), tt = stopTotals(st);
+    d.classList.toggle("done", stopComplete(st));
+    const b = d.querySelector(".badges .bd"); if (b && tt.rAll) { b.textContent = `★ ${tt.rDone}/${tt.rAll}`; b.classList.toggle("full", tt.rDone === tt.rAll); }
+    const ms = d.querySelector(".bd.miss"); if (ms) { if (tt.missLeft) ms.textContent = `${tt.missLeft} missable`; else ms.remove(); }
+  });
+  renderChips();
+}
+document.addEventListener("toggle", e => {
+  const d = e.target;
+  if (!d.matches || !d.matches("details.stop") || opts.q || opts.onlyMiss) return;
+  if (!openStops) openStops = new Set([...document.querySelectorAll("details.stop[open]")].map(x => x.dataset.stop));
+  if (d.open) openStops.add(d.dataset.stop); else openStops.delete(d.dataset.stop);
+  saveView();
+}, true);
+document.addEventListener("click", e => {
+  const tab = e.target.closest(".tab"); if (tab) { setView(tab.dataset.tab); return; }
+  const j = e.target.closest("[data-jump]");
+  if (j) { const el = document.getElementById(j.dataset.jump); if (el) el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); return; }
+  const g = e.target.closest("[data-goto]");
+  if (g) {
+    e.preventDefault();
+    opts.q = ""; $("#q").value = ""; opts.onlyMiss = false; $("#onlyMiss").checked = false; opts.hideDone = false; $("#hideDone").checked = false;
+    if (!openStops) openStops = new Set();
+    openStops.add(g.dataset.goto); setView("route");
+    const el = document.getElementById(g.dataset.goto); if (el) { el.open = true; el.scrollIntoView(); }
+  }
+});
+$("#q").addEventListener("input", e => { opts.q = e.target.value; renderRoute(); });
+$("#sq").addEventListener("input", e => { opts.sq = e.target.value; renderStars(); });
+$("#hideDone").addEventListener("change", e => { opts.hideDone = e.target.checked; saveView(); renderRoute(); });
+$("#onlyMiss").addEventListener("change", e => { opts.onlyMiss = e.target.checked; saveView(); renderRoute(); });
+$("#sMissing").addEventListener("change", e => { opts.sMissing = e.target.checked; saveView(); renderStars(); });
+$("#hideDone").checked = opts.hideDone; $("#onlyMiss").checked = opts.onlyMiss; $("#sMissing").checked = opts.sMissing;
+
+// Clear everything, with a confirm step in place
+$("#resetBox").addEventListener("click", e => {
+  const box = $("#resetBox");
+  if (e.target.id === "resetBtn") {
+    box.innerHTML = `<span class="note" style="margin:0">Clear every tick on this page? </span><button type="button" class="reset" id="resetYes">Yes, clear them</button> <button type="button" class="reset" id="resetNo">Keep them</button>`;
+  } else if (e.target.id === "resetYes") {
+    stars = new Set(); tre = new Set(); save(); renderAll();
+    box.innerHTML = `<button type="button" class="reset" id="resetBtn">Clear all ticks</button>`;
+  } else if (e.target.id === "resetNo") {
+    box.innerHTML = `<button type="button" class="reset" id="resetBtn">Clear all ticks</button>`;
+  }
+});
+
+// Theme: automatic, light or dark, shared with the rest of the site
+(function () {
+  const NAMES = { auto: ["◐", "Auto"], light: ["☀", "Light"], dark: ["☾", "Dark"] }, btn = $("#themeBtn");
+  let theme = "auto";
+  try { const t = localStorage.getItem("rumgames-theme"); if (t === "light" || t === "dark") theme = t; } catch (e) {}
+  function apply() {
+    if (theme === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", theme);
+    btn.querySelector(".ti").textContent = NAMES[theme][0]; btn.querySelector(".tl").textContent = NAMES[theme][1];
+    btn.setAttribute("aria-label", "Theme: " + NAMES[theme][1] + ". Click to change");
+  }
+  btn.addEventListener("click", () => {
+    theme = theme === "auto" ? "light" : theme === "light" ? "dark" : "auto";
+    try { theme === "auto" ? localStorage.removeItem("rumgames-theme") : localStorage.setItem("rumgames-theme", theme); } catch (e) {}
+    apply();
+  });
+  apply();
+})();
+
+setView(view);
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script>
+// Website only: sign in with Discord through Supabase so progress follows you between devices.
+(() => {
+  const SB_URL = "https://uzlpapycceulvwlsscyg.supabase.co", SB_KEY = "sb_publishable_IiOnVGrpdH5GNmwIujj7SA_NDCK_s2P", GAME = "suikoden-2";
+  const btn = document.getElementById("authBtn");
+  if (!window.supabase || !btn) return;
+  const sb = supabase.createClient(SB_URL, SB_KEY, { auth: { flowType: "pkce", detectSessionInUrl: true, persistSession: true } });
+  let remote = null, uid = null;
+  const nameOf = u => (u.user_metadata && (u.user_metadata.custom_claims?.global_name || u.user_metadata.full_name || u.user_metadata.name)) || "you";
+  function signedOut() {
+    uid = null;
+    if (remote) { const i = REMOTES.indexOf(remote); if (i >= 0) REMOTES.splice(i, 1); remote = null; }
+    btn.hidden = false; btn.classList.remove("out"); btn.textContent = "Sign in to sync";
+    btn.title = "Sign in with Discord to keep your ticks on every device";
+    setSync("Saved in this browser");
+  }
+  async function signedIn(session) {
+    const u = session.user;
+    if (uid === u.id) return;
+    uid = u.id;
+    btn.hidden = false; btn.classList.add("out"); btn.textContent = "Sign out"; btn.title = `Signed in with Discord as ${nameOf(u)}`;
+    setSync("Loading your saved progress…");
+    const { data, error } = await sb.from("progress").select("data").eq("user_id", uid).eq("game", GAME).maybeSingle();
+    if (error) { setSync("Saved in this browser (couldn't reach your account)"); return; }
+    remote = {
+      ok: `Synced · ${nameOf(u)}`,
+      write: async p => {
+        const { error } = await sb.from("progress").upsert({ user_id: uid, game: GAME, data: p, updated_at: p.updated }, { onConflict: "user_id,game" });
+        if (error) throw error;
+      },
+    };
+    REMOTES.push(remote);
+    if (data) { if (mergeIn(data.data)) flush(); else setSync(remote.ok); }
+    else if (hasLocalProgress()) flush();
+    else setSync(remote.ok);
+  }
+  sb.auth.onAuthStateChange((event, session) => {
+    // run outside the auth callback, as Supabase recommends
+    setTimeout(() => { if (session) signedIn(session); else signedOut(); }, 0);
+  });
+  btn.addEventListener("click", async () => {
+    if (uid) { await sb.auth.signOut(); signedOut(); return; }
+    btn.disabled = true; btn.textContent = "Opening Discord…";
+    const { error } = await sb.auth.signInWithOAuth({ provider: "discord", options: { redirectTo: location.origin + location.pathname } });
+    if (error) { btn.disabled = false; btn.textContent = "Sign in to sync"; setSync("Couldn't start sign-in"); }
+  });
+})();
+</script>
+</body>
+</html>

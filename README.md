@@ -20,6 +20,15 @@ Hi! 👋 This is where I put the things I make while playing through a game: che
 - ⟳ **One-click save updates**: in Chrome or Edge on a computer, the site can remember your save file so re-importing takes one click (Firefox, Safari and phones just pick the file each time)
 - ☁️ **Sign in with Discord** to keep your ticks on every device, or just use it without an account
 
+### Suikoden II
+
+- 🧭 **The story route, stop by stop**: 77 stops across 11 parts, first visits and every trip back, in the order you play them
+- ⭐ **All 108 Stars of Destiny**: who you can recruit at each stop, what they need (party members, items, castle level), and second chances for the ones you can miss
+- 💎 **156 treasures**: chests, hidden pickups, recipes, old books and the Rare Finds worth buying, with where to find each one
+- ⚠️ **Missable warnings**: the choices and deadlines that cost you a Star or the best ending
+- 📋 **108 Stars roster**: everyone in one list, with a link to where to find them
+- ☁️ **Sign in with Discord** to keep your ticks on every device
+
 ## Coming up
 
 - More games once I pick my next one
@@ -42,7 +51,14 @@ These checklists stand on the work of guide writers and fans. Thank you!
 - [Steam Community](https://steamcommunity.com/app/1971650/discussions/0/3782499316872148100): places players found easy to miss
 - [OT2R](https://github.com/MarvinXLII/OT2R) by MarvinXLII: the randomizer whose code reads the game's data tables, which is how the save import knows what each ID in a save means
 
-A fan-made project, not affiliated with Square Enix. Octopath Traveler II belongs to Square Enix.
+### Suikoden II
+
+- [Game8](https://game8.co/games/Suikoden-2/archives/494319): the story walkthrough, chest locations and recruit conditions
+- [Gensopedia](https://gensopedia.org/w/108_Stars): the roster of the 108 Stars
+- [Suikoden II Recruitment Guide](https://publish.obsidian.md/taniynquest/Clippings/Suikoden+II+Recruitment+Guide): second chances and deadlines
+- [Suikoden Wiki](https://suikoden.fandom.com/wiki/Rakutei_Mountain): Rakutei Mountain and Kobold Village items
+
+A fan-made project, not affiliated with Square Enix or Konami. Octopath Traveler II belongs to Square Enix, and Suikoden II belongs to Konami.
 
 ## For the curious
 
@@ -52,6 +68,8 @@ It's just plain HTML pages, no build step. Every push to `main` goes live on Clo
 index.html                    home page listing every game
 octopath-traveler-2/
   index.html                  the Octopath Traveler II checklist
+suikoden-2/
+  index.html                  the Suikoden II checklist
 ```
 
 Ticks save in your browser, separately for each game. If you sign in, they also sync to your account.
