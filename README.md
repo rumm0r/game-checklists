@@ -24,7 +24,7 @@ Hi! 👋 This is where I put the things I make while playing through a game: che
 
 - 🧭 **The story route, stop by stop**: 77 stops across 11 parts, first visits and every trip back, in the order you play them
 - ⭐ **All 108 Stars of Destiny**: who you can recruit at each stop, what they need (party members, items, castle level), and second chances for the ones you can miss
-- 💎 **156 treasures**: chests, hidden pickups, recipes, old books and the Rare Finds worth buying, with where to find each one
+- 💎 **160 treasures**: chests, hidden pickups, recipes, old books and the Rare Finds worth buying, with where to find each one
 - ⚠️ **Missable warnings**: the choices and deadlines that cost you a Star or the best ending
 - 📋 **108 Stars roster**: everyone in one list, with a link to where to find them
 - ☁️ **Sign in with Discord** to keep your ticks on every device

@@ -119,6 +119,14 @@ details.stop.done>summary .sn{color:var(--done)}
 .tg.r{color:var(--coin-ink);background:var(--coin-bg)}
 .boss{font-size:.9rem;color:var(--muted);margin:2px 0 0}
 .boss b{color:var(--ink);font-weight:500}
+/* "Wrong?" links: open a pre-filled GitHub issue */
+.rep{font-size:.75rem;color:var(--muted);text-decoration:none;border:1px solid transparent;border-radius:4px;padding:0 5px;margin-left:auto;white-space:nowrap}
+.rep:hover,.rep:focus-visible{color:var(--warn);border-color:var(--warn)}
+@media (hover:hover) and (pointer:fine){ .it .rep{opacity:0} .it:hover .rep,.it .rep:focus-visible{opacity:1} }
+.it .top{width:100%}
+.stoprep{font-size:.82rem;color:var(--muted);margin:4px 0 0}
+.stoprep a{color:var(--muted)}
+.stoprep a:hover{color:var(--warn)}
 .empty{color:var(--muted);text-align:center;padding:30px 0}
 
 /* stars view */
@@ -194,8 +202,9 @@ details.stop.done>summary .sn{color:var(--done)}
       <li><a href="https://gensopedia.org/w/108_Stars" target="_blank" rel="noopener">Gensopedia</a>: the full roster of the 108 Stars</li>
       <li><a href="https://publish.obsidian.md/taniynquest/Clippings/Suikoden+II+Recruitment+Guide" target="_blank" rel="noopener">Suikoden II recruitment guide</a>: second chances and deadlines</li>
       <li><a href="https://suikoden.fandom.com/wiki/Rakutei_Mountain" target="_blank" rel="noopener">Suikoden Wiki</a>: Rakutei Mountain and Kobold Village items</li>
+      <li><a href="https://gensopedia.org/w/Characters_in_Suikoden_II" target="_blank" rel="noopener">Gensopedia's character and town pages</a> and <a href="https://www.giga.de/entertainment/suikoden-2-remaster-alle-charaktere-finden-und-das-beste-ende-erreichen--01JNNN6SGRT70NGC9T3G08VZQM" target="_blank" rel="noopener">GIGA's recruitment guide</a>: settling where guides disagree</li>
     </ul>
-    <p>Spotted a mistake? <a href="https://github.com/rumm0r/game-checklists/issues" target="_blank" rel="noopener">Open an issue</a>.</p>
+    <p>Spotted a mistake? Every recruit and treasure has a <b>Wrong?</b> link that opens a ready-to-send report, or you can <a href="https://github.com/rumm0r/game-checklists/issues" target="_blank" rel="noopener">open an issue</a> yourself.</p>
     <p><span id="resetBox"><button type="button" class="reset" id="resetBtn">Clear all ticks</button></span></p>
     <p>A fan-made project, not affiliated with Konami. Suikoden II belongs to Konami.</p>
   </footer>
@@ -240,7 +249,7 @@ const ROUTE = [
   { n:"Mercenary Fortress", v:"Return", r:[["gengen","Joins when you get back from Kyaro.","a"]] },
 ]},
 { t:"Ryube and Toto", s:"Errands for the fortress, and Highland's first strike.", stops:[
-  { n:"Ryube Village", r:[["rikimaru","Out cold at the inn. Pay his 3,000 potch meal tab.","m"],["millie","Agree to find her pet Bonaparte, then beat him in Ryube Forest (east path)."]],
+  { n:"Ryube Village", r:[["rikimaru","Out cold at the inn. Pay his 3,000 potch meal tab.","m"],["millie","North-east of the village by the Ryube Forest entrance. Agree to find her pet Bonaparte (he's at the end of the forest's east path)."]],
     warn:["If you skip Rikimaru here, you can pay his tab again at Coronet later."] },
   { n:"Ryube Forest", v:"First visit", boss:"Bonaparte (weak to fire)" },
   { n:"Toto Village", r:[["zamza","At the inn, talk to him with Nanami in the party.","m"]],
@@ -254,7 +263,7 @@ const ROUTE = [
 { t:"Muse and the road south", s:"The Muse alliance, Sindar Ruins and Coronet.", stops:[
   { n:"Sindar Ruins", i:[["Mega Medicine","Chest on the left path"],["Stone of Magic","Chest on the left path"],["Angry Blow Scroll","Chest on the left side of the canal"],["Gauntlets","Chest north across the bridge"],["Shoulder Pads","Chest in the Round Plate room"],["Fire Lizard Orb","End of the path past the two-headed snake statue"],["Chain Mail","Across the canal to the north once it's drained"],["Water Orb","Chest south of the Square Plate corner"],["Magic Absorb Orb","Chest on the path right of the snake statue"],["Old Book Vol. 2","Chest on the path right of the snake statue"]],
     boss:"Double Head (weak to fire)" },
-  { n:"Muse City", v:"The alliance", r:[["tuta","South of City Hall after Jess's first job."],["anita","At Leona's tavern. Talk to her, leave and come back, and repeat until she offers to join."],["clive","Answer Elza in the alley north-east of the city, right of the Appraisal Shop. This starts Clive's chase; he joins at South Window later.","m"],["gilbert","In the army battle, attack his unit until he falls back. Don't destroy it.","m"]],
+  { n:"Muse City", v:"The alliance", r:[["tuta","South of City Hall after Jess's first job."],["anita","At Leona's tavern. Talk to her, leave and come back, and repeat until she offers to join."],["clive","Answer Elza in the alley north-east of the city, right of the Appraisal Shop. This starts Clive's chase; he joins later, once you have a boat.","m"],["gilbert","In the army battle, attack his unit until he falls back. Don't destroy it.","m"]],
     i:[["Recipe #3","From Huan outside City Hall"],["Sound Set #1","From Elza at the city entrance"],["Highland Uniform","Reward for taking Jess's spying job"]],
     warn:["Clive's chase runs on a play-time clock. Turn off the Event Timer in the remaster's settings or keep moving.","Save before the army battle. If Gilbert's unit is wiped out you lose him for good."] },
   { n:"Highland garrison", i:[["Circlet","Chest on the right path, east, in the forest"],["Belt of Strength","Chest on the north-west path at the fork"],["Fire Sealing Orb","Chest by the brown tent in the garrison"]] },
@@ -266,31 +275,31 @@ const ROUTE = [
 { t:"South Window to Two River", s:"Granmeyer, North Window, Radat, and the river towns.", stops:[
   { n:"South Window City", r:[["viktor","Rejoins on arrival.","a"],["flik","Joins at the inn.","a"],["freed","Joins after you meet Granmeyer at City Hall.","a"]] },
   { n:"Cave of the Wind", i:[["Sun Badge","Hidden north-west path at the odd-looking fork"],["Fish Badge","South-west path, then left and up"],["Fire Wall","Right path, then left at the split"],["Pale Gate Rune","Upper-left of the four-rock puzzle"],["Medicine","Upper-left of the four-rock puzzle"],["3,000 potch","Upper-left of the four-rock puzzle"],["Stone of Protection","South at the three-way split"],["Half Helmet","Left path at the three-way split"]],
-    boss:"Celestial Sword" },
+    boss:"Celestial Sword", note:"Kahn travels with you from here. He becomes one of your Stars after Neclord, so he's listed there." },
   { n:"North Window Castle", i:[["Fire Rune","Right path just inside"],["Stone of Magic Protection","Ground floor, right side of the main hall"],["Darkness Rune","Hidden middle door in the gargoyle room"],["Blue Ribbon","Behind the candle door: light the bottom candles to match the top"],["Chain Mail","Upper floor"],["Collar","Upper floor"]],
     boss:"Abomination (weak to fire and holy)" },
-  { n:"Radat Town", r:[["shu","His house, once you've found the silver coin in the river. Apple must be travelling with you.","a"],["leona","Joins after the battle with Solon Jhee's army.","a"],["luc","Joins the morning after the battle.","a"],["huan","Joins the morning after the battle.","a"],["barbara","Joins the morning after the battle.","a"],["amada","After agreeing to take Fitcher to Two River, beat Amada in the duel at the bridge."],["richmond","Lose his coin toss, get a plain coin from the man by the tavern, then toss again with it."],["yoshino","Talk to her with Freed in the party."]],
+  { n:"Radat Town", r:[["shu","His house, once you've found the silver coin in the river. Apple must be travelling with you.","a"],["leona","Joins after the battle with Solon Jhee's army.","a"],["luc","Joins the morning after the battle.","a"],["huan","Joins the morning after the battle.","a"],["barbara","Joins the morning after the battle.","a"],["amada","After agreeing to take Fitcher to Two River, beat Amada in the duel at the bridge."],["richmond","Lose his coin toss, get a plain coin from the customer left of the restaurant door, then toss again with it."],["yoshino","Just east of Richmond. Talk to her with Freed in the party."]],
     i:[["Recipe #14","The chef in the white hat at the tavern"]],
     warn:["Bring Freed when you leave headquarters, or you'll have to come back for Yoshino."] },
-  { n:"Kuskus Town", r:[["taiho","Beat him at Chinchirorin in the hut by the docks and win 5,000 potch. Save first."],["yamkoo","Joins with Tai Ho."],["oulan","Come with only women in the party besides you. Talk to the old woman at the entrance, then head west over the bridge."]] },
+  { n:"Kuskus Town", i:[["Recipe #11*","Item shop Rare Finds"]], r:[["taiho","Beat him at Chinchirorin in the hut by the docks and win 5,000 potch. Save first."],["yamkoo","Joins with Tai Ho."],["oulan","Come with only women in the party besides you. Talk to the old woman at the entrance, then leave town and come back in."]] },
   { n:"Lakewest Town", r:[["taki","Talk to her in the upper-left house a few times."]],
     i:[["Recipe #16","Spice rack in the upper-left house"],["Kindness Rune","Vegetable basket at the docks"]] },
   { n:"Two River City", r:[["chaco","Joins after you drive Highland out of the city.","a"],["fitcher","Joins after Two River is saved.","a"],["ridley","Joins after Two River is saved.","a"],["hans","In the room next to yours at the inn, the next morning. Let him open his shop for free; asking for money makes him take much longer."]],
-    i:[["Spinach Seedling","Granny Susu's house in the Winger District. Can't be got later"],["Fried Tacos*","Item shop in the Kobold District. You'll need these for Tetsu"]] },
+    i:[["Spinach Seedling","Granny Susu's house in the Winger District. Missed it? Eye Flowers around Greenhill sometimes drop one"],["Fried Tacos*","Item shop in the Kobold District. You'll need these for Tetsu"]] },
   { n:"Two River Sewers", i:[["Headgear","Right side of the main sewer"],["Resurrection Orb","Past the second plank, north"],["Healing Wind","Further along the sewer"],["Fire Emblem","Chest across the plank going north"],["Stone of Protection","Chest across the plank going north"]],
     boss:"Pest Rat" },
 ]},
 { t:"Building the castle", s:"Your headquarters grows. Loop back for everyone who's turned up.", stops:[
-  { n:"Headquarters", r:[["haiyo","In the kitchen area once the castle has grown.","2"]] },
+  { n:"Headquarters", r:[["haiyo","On the kitchen terrace once the castle has grown.","2"]] },
   { n:"Lakewest Town", v:"Return", r:[["tetsu","Eat Fried Tacos in battle until you're Toasty, then talk to him in the north-west house."],["hix","Talk to Hix and Tengaar at the inn, then help Hix at Kobold Village.","2"],["tengaar","Joins with Hix.","2"],["shilo","Win 5,000 potch from him at Chinchirorin at the inn.","2"]] },
   { n:"Kobold Village", note:"Hix's trial (started at the Lakewest inn) happens here.",
     i:[["Recipe #13","Someone in the elder's house"],["Exertion Orb","The big jar beside the elder's house"]] },
   { n:"Radat Town", v:"Return", r:[["stallion","Run from 50 battles (Run Away or Let Go), then challenge him to a race.","2"]] },
-  { n:"South Window City", v:"Return", r:[["alex","Upstairs at the inn.",""],["hilda","Joins with Alex.",""],["adlai","North-east of the trade shop. Bring a Wooden Shield, a Wind Crystal and a Sacrificial Jizo, then throw the crystal at him."],["clive","Finish the duel with Clive here after the boat trip from Kuskus.","m"],["zamza","Second chance if you missed him in Toto: Nanami in the party.","x"]] },
+  { n:"South Window City", v:"Return", r:[["alex","Upstairs at the inn.",""],["hilda","Joins with Alex.",""],["adlai","His house in the east of town. He asks for a Sacrificial Jizo (Clive has one, or buy one in Kuskus's Rare Finds), then a Wooden Shield, then a Wind Orb from the rune shop. Throw the orb at him rather than handing it over."],["clive","Once you have a boat, find him just south of the South Window entrance, then take him to the Lakewest inn, where he joins.","m"],["zamza","Second chance if you missed him in Toto: Nanami in the party.","x"]] },
 ]},
 { t:"Greenhill", s:"Undercover at the academy, then out through the forest.", stops:[
   { n:"Greenhill City", r:[["emilia","After the academy tour, come back and tell her what you were really doing.","2"]],
-    i:[["Recipe #20","The cook at the inn"],["Old Book Vol. 5","Bookshelf in the north-west room, academy ground floor"],["Recipe #25*","Sometimes in the item shop's Rare Finds"]] },
+    i:[["Recipe #20","The cook at the inn"],["Old Book Vol. 5","Bookshelf in the north-west room, academy ground floor"],["Recipe #25*","Sometimes in the item shop's Rare Finds"],["Turtle Plans #2","Dropped by RaggedOnes on the Greenhill map. Get it before Greenhill is retaken"]] },
   { n:"Greenhill Forest", r:[["teresa","Joins as you get out of Greenhill.","a"],["nina","Joins as you get out of Greenhill.","a"],["shin","Joins as you get out of Greenhill.","a"]],
     i:[["Protection Mist","Right path at the fork"],["Silver Hat","North path from the first corner past the cabin"],["Toe Shoes","South path from that same corner"],["Chimera Orb","Chest on the right near the exit"]] },
   { n:"Two River City", v:"Return", r:[["jeane","At the rune shop.","2"],["gabocha","First house right of the Kobold District item shop, with Gengen in the party.","2"],["sid","Secret room in the sewers (left, down the first ladder) with Chaco in the party.","2"]] },
@@ -303,7 +312,7 @@ const ROUTE = [
   { n:"Forest Path to Matilda", r:[["viki","East of the chests. Say she can stay at your place.","a"]],
     i:[["Guard Ring","Chest north, past Badeaux"],["Mega Medicine","Chest on the left over the next two screens"],["Dragon Armor","North-east path over the next two screens"]] },
   { n:"Highway Village", r:[["humphrey","Stay the night at the inn, then come back and help him on Rakutei Mountain.","m"],["futch","Joins with Humphrey.","m"]],
-    i:[["Recipe #32","Woman in the middle house"]],
+    i:[["Recipe #32","Woman in the house left of the inn"],["Calf*","Boy left of the inn, 7,000 potch, once Yuzu runs your ranch"]],
     warn:["Do Humphrey and Futch before you go on to Muse. Matilda shuts for most of the game after that."] },
   { n:"Rakutei Mountain", i:[["Fur Cape","On the climb"],["Thunder Runner Scroll","On the climb"],["Thunder Amulet","On the climb"],["Stone of Power","On the climb"],["Dragon Plans #2","On the climb"],["2,000 potch","On the climb"],["Medicine Rune","On the climb"],["Unicorn Plans #2","On the climb"],["Skill Ring","On the climb"]],
     note:"Only reachable during Humphrey's errand.", boss:"Harpy" },
@@ -328,7 +337,7 @@ const ROUTE = [
 { t:"After Luca", s:"Highland's prince is gone. Lots of people are ready to talk now.", stops:[
   { n:"South Window City", v:"Return", r:[["maximillian","Talk to him in town.","3"],["killey","In front of the trade shop. Mention Alex and the Sindar Ruins, talk to Alex at headquarters, then keep asking Killey.","3"],["annallee","Find her at the inn, follow her to the square right of City Hall and listen to her song.","3"]] },
   { n:"Kuskus Town", v:"Return", r:[["karen","At the inn by the stage. Agree to dance and match her steps.","3"]] },
-  { n:"Radat Town", v:"Return", r:[["hoi","Help him out against the locals at the tavern.","3"]] },
+  { n:"Radat Town", v:"Return", r:[["hoi","In front of the restaurant. Help him out against the locals.","3"]] },
   { n:"Coronet Town", v:"Return", r:[["rikimaru","Second chance if you skipped him in Ryube: pay his tab again.","x"]],
     warn:["The White Tigers between Coronet and Muse drop the Double-Beat Rune. This is your last trip through there."] },
   { n:"Banner Village", v:"Optional", r:[["mcdohl","Only with a Suikoden I clear save loaded. He turns up here; finish his errand and he joins. Not one of the 108.","b"]] },
@@ -350,13 +359,13 @@ const ROUTE = [
 ]},
 { t:"Liberating Greenhill", s:"Back through the forest to free the city.", stops:[
   { n:"Greenhill Forest", v:"Return", i:[["Winged Boots","First of two chests on the right path"],["Dream Robe","Second of those two chests"],["Stone of Skill","After a left turn on the main path"]] },
-  { n:"Greenhill City", v:"Return", r:[["pico","At the inn. Ask about Annallee (recruit her first).","3"],["jude","Talk to him in the forge classroom at the academy, then bring him clay from a villager in Forest Village.","3"]],
+  { n:"Greenhill City", v:"Return", r:[["pico","At the inn. Ask about Annallee (recruit her first, and leave her out of your party).","3"],["jude","Talk to him in the forge classroom at the academy, then bring him clay from the man north of the trading post in Forest Village.","3"]],
     i:[["Old Book Vol. 10","Man downstairs in the dormitory"],["Rage Rune","Woman in the rune classroom"],["Silver Hammer","Student on the right in the forge classroom"],["Window Set #6*","Item shop Rare Finds"],["Rabbit Plans #4*","Item shop Rare Finds"]],
     boss:"Bone Dragon (weak to holy and wind)" },
   { n:"Forest Village", v:"Return", i:[["Sound Set #7","Girl in the house above the inn"],["Old Book Vol. 6","Old man at the trading post"]] },
-  { n:"South Window City", v:"Return", r:[["gantetsu","Win the arm-wrestle. Bring your strongest party (combined strength around 400).","3"]] },
+  { n:"South Window City", v:"Return", r:[["gantetsu","Win his pushing contest. The wiki says combined party strength of 320 is enough; some guides say 400, so bring your strongest hitters.","3"]] },
   { n:"Tinto City", v:"Return", r:[["alberto","At the armour shop, ask him about Annallee (needs Annallee and Pico).","3"]] },
-  { n:"Kuskus Town", v:"Return", r:[["tessai","At the blacksmith, with Viktor in the party.","3"]] },
+  { n:"Kuskus Town", v:"Return", r:[["tessai","At his smithy, with Viktor in the party."]] },
   { n:"Two River City", v:"Return", r:[["bob","Kobold District, once you have 80 or more Stars.","3"]] },
   { n:"Castle level 4 round", v:"Late recruits", r:[["genshu","Ride the boat from Kuskus to Coronet with someone carrying a level 14 weapon, and talk to him there.","4"],["vincent","Radat sluice gate, with Simone in the party.","4"],["pesmerga","At the very end of the Cave of the Wind.","4"],["mazus","Tinto Mines save point room, if you haven't already.","4x"],["chuchara","Abizboah's family at your docks. Not one of the 108.","b"]] },
 ]},
@@ -364,7 +373,7 @@ const ROUTE = [
   { n:"Muse City", v:"Liberation", boss:"Golden Wolf", note:"Don't fight the extra wolves after the boss; leave by the entrance." },
   { n:"Headquarters", v:"Check in", r:[["hans","If you asked him for money, look for him back in his Two River inn room now.","x"]],
     note:"Check the Stone Tablet: Leknaat only appears in the Great Hall if all 108 are there. That's the road to the best ending." },
-  { n:"Rockaxe Castle", i:[["Stone of Speed","Chest near the first ladder"],["Escape Talisman","Right path after that ladder"],["Stone of Luck","Behind the brown door past the second ladder"],["Crimson Cape","Behind that same door"],["Earth Shield","Past the candle hallway, right path"],["Power Gloves","Down the ladder and south"],["Gold Collar","Sleeping quarters"],["Mega Medicine","Sleeping quarters"],["Full Helmet","Above the sleeping quarters"],["Dragon Plans #4","Room with two chests (north-west stairs, then east)"],["Unicorn Plans #4","Same room"],["Thunder Rune","Guard past the Gordeau fight area"],["Earth Armor","Chest past the Gordeau area"],["Recipe #37","Bookshelf near the Earth Armor"],["Recipe #36","Dropped by Highland archers"],["Old Book Vol. 11","Basement of the town's item and armour shops"]],
+  { n:"Rockaxe Castle", i:[["Stone of Speed","Chest near the first ladder"],["Escape Talisman","Right path after that ladder"],["Stone of Luck","Behind the brown door past the second ladder"],["Crimson Cape","Behind that same door"],["Earth Shield","Past the candle hallway, right path"],["Power Gloves","Down the ladder and south"],["Gold Collar","Sleeping quarters"],["Mega Medicine","Sleeping quarters"],["Full Helmet","Above the sleeping quarters"],["Dragon Plans #4","Room with two chests (north-west stairs, then east)"],["Unicorn Plans #4","Same room"],["Thunder Rune","Guard past the Gordeau fight area"],["Earth Armor","Chest past the Gordeau area"],["Recipe #37","Bookshelf near the Earth Armor"],["Recipe #36","Dropped by Highland archers"],["Knight Armor","Dropped by Gordeau"],["Old Book Vol. 11","Basement of the town's item and armour shops"]],
     boss:"Gordeau", warn:["At the third prompt in the big Rockaxe scene there's a hidden 3-second timer: pick the top option fast. It matters for the best ending."] },
   { n:"Sajah Village", i:[["Windspun Armor*","Item shop Rare Finds"],["Horned Helmet*","Item shop Rare Finds"],["Golden Hammer*","Item shop Rare Finds. Lets Tessai sharpen to level 16"]],
     note:"North-west of L'Renouille. Bring Clive to finish his story." },
@@ -498,6 +507,19 @@ function matches(st, q) {
   };
 }
 
+// ================= Report a mistake: a pre-filled GitHub issue
+const REPO = "https://github.com/rumm0r/game-checklists/issues/new";
+const stopLabel = st => st.n + (st.v ? ` (${st.v})` : "") + `, ${st.ch.t}`;
+function issueUrl(st, kind, name, text) {
+  const title = kind ? `Suikoden II: ${name} at ${st.n}` : `Suikoden II: missing at ${st.n}${st.v ? " (" + st.v + ")" : ""}`;
+  const body = kind
+    ? `**Stop:** ${stopLabel(st)}\n**${kind}:** ${name}\n**The checklist says:** ${text}\n\n**What's wrong:**\n\n`
+    : `**Stop:** ${stopLabel(st)}\n\n**What's missing (item or recruit, and where):**\n\n`;
+  return `${REPO}?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+}
+const repLink = (st, kind, name, text) =>
+  `<a class="rep" href="${issueUrl(st, kind, name, text)}" target="_blank" rel="noopener" title="Something wrong with this? Report it on GitHub" aria-label="Report a mistake about ${esc(name)}">Wrong?</a>`;
+
 // ================= Route view
 function renderRoute() {
   const q = opts.q.trim().toLowerCase();
@@ -525,13 +547,14 @@ function renderRoute() {
       if (st.warn) body += `<ul class="warns">${st.warn.map(w => `<li>${esc(w)}</li>`).join("")}</ul>`;
       if (recs.length) body += `<div class="grp rec"><h4>Recruit</h4><div class="list">${recs.map(r => `
         <label class="it"><input type="checkbox" data-star="${r.id}"${recDone(r) ? " checked" : ""}>
-          <span class="top"><span class="nm">${esc(nameOf(r.id))}</span>${tags(r)}</span>
+          <span class="top"><span class="nm">${esc(nameOf(r.id))}</span>${tags(r)}${repLink(st, "Recruit", nameOf(r.id), r.how)}</span>
           <span class="how">${esc(r.how)}</span></label>`).join("")}</div></div>`;
       if (items.length) body += `<div class="grp tre"><h4>Treasure</h4><div class="list">${items.map(i => `
         <label class="it"><input type="checkbox" data-item="${i.id}"${tre.has(i.id) ? " checked" : ""}>
-          <span class="top"><span class="nm">${esc(i.n)}</span>${i.bought ? `<span class="tg a">Buy</span>` : ""}</span>
+          <span class="top"><span class="nm">${esc(i.n)}</span>${i.bought ? `<span class="tg a">Buy</span>` : ""}${repLink(st, "Treasure", i.n, i.w)}</span>
           <span class="how">${esc(i.w)}</span></label>`).join("")}</div></div>`;
       if (st.boss) body += `<p class="boss">Boss: <b>${esc(st.boss)}</b></p>`;
+      body += `<p class="stoprep"><a href="${issueUrl(st)}" target="_blank" rel="noopener">Missing something here? Tell me</a></p>`;
       parts.push({ st, complete, html: `<summary><span class="sn">${esc(st.n)}${st.v ? `<span class="vis">${esc(st.v)}</span>` : ""}</span><span class="badges">${badges}</span></summary><div class="body">${body}</div>` });
     }
     if (!parts.length) continue;
