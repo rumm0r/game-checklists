@@ -44,6 +44,10 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,7vw,3.2rem)
 .game .go{color:var(--accent);font-weight:700;font-size:.9rem}
 [hidden]{display:none!important}
 .game.soon a{border-style:dashed;pointer-events:none;opacity:.7}
+.game.soon .go{color:var(--muted)}
+.kind-soon{background:transparent;color:var(--muted);border:1px solid var(--line);padding:1px 8px}
+/* text-only art for a game that has no artwork yet */
+.game .art-plate{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--sunk),var(--surface));color:var(--muted);font-family:var(--display);font-size:2rem;letter-spacing:.04em}
 .wrap{width:100%;box-sizing:border-box}
 .sitefoot{margin-top:auto;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px));text-align:center;border-top:1px solid var(--line)}
 .foot{margin:0 auto;color:var(--muted);font-size:.85rem;max-width:60ch}
@@ -73,6 +77,17 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,7vw,3.2rem)
         <span class="go">Open checklist →</span>
       </a>
     </li>
+    <!-- Coming soon: swap in a real href, art and tags (and drop the "soon" class) once the checklist exists -->
+    <li class="game soon">
+      <a href="#" aria-disabled="true" tabindex="-1">
+        <span class="art art-plate" aria-hidden="true"><span>Suikoden II</span></span>
+        <span class="kinds" aria-label="Type"><span class="kind kind-checklist">Checklist</span><span class="kind kind-soon">Coming soon</span></span>
+        <span class="t">Suikoden II</span>
+        <span class="d">Every one of the 108 Stars of Destiny and how to recruit them before it's too late, plus the treasures, recipes and side jobs that are easy to miss.</span>
+        <span class="tags"><span>108 Stars of Destiny</span><span>Missable recruits</span></span>
+        <span class="go">In the works</span>
+      </a>
+    </li>
     <!-- Placeholder for the next game: remove "hidden" to show it again -->
     <li class="game soon" hidden>
       <a href="#" aria-disabled="true" tabindex="-1">
@@ -84,7 +99,7 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,7vw,3.2rem)
 </div>
 <footer class="sitefoot">
   <p class="foot">Progress saves in your browser, or follows you across devices if you sign in.</p>
-  <p class="foot legal">A fan-made project, not affiliated with Square Enix. Octopath Traveler II artwork from the <a href="https://www.square-enix-games.com/en_US/games/octopath-traveler-ii" target="_blank" rel="noopener">official website</a>, © 2023 SQUARE ENIX CO., LTD. All Rights Reserved.</p>
+  <p class="foot legal">A fan-made project, not affiliated with Square Enix or Konami. Suikoden II belongs to Konami. Octopath Traveler II artwork from the <a href="https://www.square-enix-games.com/en_US/games/octopath-traveler-ii" target="_blank" rel="noopener">official website</a>, © 2023 SQUARE ENIX CO., LTD. All Rights Reserved.</p>
 </footer>
 <script>
 // theme: automatic (follows the device), light or dark; shared with the checklists
