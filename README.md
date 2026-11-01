@@ -27,6 +27,8 @@ Hi! 👋 This is where I put the things I make while playing through a game: che
 - 💎 **160 treasures**: chests, hidden pickups, recipes, old books and the Rare Finds worth buying, with where to find each one
 - ⚠️ **Missable warnings**: the choices and deadlines that cost you a Star or the best ending
 - 📋 **108 Stars roster**: everyone in one list, with a link to where to find them
+- 💾 **Fill in from your save** (Steam): pick your save and it ticks every Star you've recruited, recipes you've learned and the chests it can place, greys out recruits your castle can't get yet, and warns if a Star has died. The file never leaves your browser
+- ⟳ **One-click save updates** in Chrome or Edge on a computer, same as Octopath
 - ☁️ **Sign in with Discord** to keep your ticks on every device
 
 ## Coming up
@@ -57,6 +59,7 @@ These checklists stand on the work of guide writers and fans. Thank you!
 - [Gensopedia](https://gensopedia.org/w/108_Stars): the roster of the 108 Stars
 - [Suikoden II Recruitment Guide](https://publish.obsidian.md/taniynquest/Clippings/Suikoden+II+Recruitment+Guide): second chances and deadlines
 - [Suikoden Wiki](https://suikoden.fandom.com/wiki/Rakutei_Mountain): Rakutei Mountain and Kobold Village items
+- Save reading: [Suikoden HD Remaster Save Editor](https://github.com/nintendogamer15/Suikoden-HD-Remaster-Save-Editor) (0BSD), [SuiSaveEditor](https://github.com/faospark/suisaveeditor) by faospark (MIT), [d3xMachina](https://github.com/d3xMachina/Suikoden-Fix)'s save decrypter research and [suikoden_ref](https://github.com/asilverthorn/suikoden_ref) by asilverthorn
 
 A fan-made project, not affiliated with Square Enix or Konami. Octopath Traveler II belongs to Square Enix, and Suikoden II belongs to Konami.
 

@@ -145,6 +145,42 @@ details.stop.done>summary .sn{color:var(--done)}
 .foot ul{padding-left:1.2em;margin:6px 0}
 .reset{font-size:.85rem;background:none;border:1px solid var(--line);color:var(--muted);border-radius:6px;padding:4px 10px;cursor:pointer}
 .reset:hover{border-color:var(--warn);color:var(--warn)}
+/* save import */
+.savebtn{font-size:.85rem;border:1px solid var(--coin);background:var(--coin-bg);color:var(--coin-ink);border-radius:99px;padding:4px 12px;cursor:pointer;white-space:nowrap;margin-bottom:8px;font-weight:700}
+.savebtn:hover{border-color:var(--accent)}
+.savestat{margin:8px 0 0;font-size:.88rem;color:var(--muted)}
+.savestat b{color:var(--ink);font-weight:500}
+.savestat button{font:inherit;font-size:.85rem;background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;cursor:pointer}
+dialog.savedlg{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);padding:0;width:min(640px,calc(100vw - 24px));max-height:calc(100dvh - 32px)}
+dialog.savedlg::backdrop{background:rgba(10,12,24,.55)}
+.dlg-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface)}
+.dlg-head h2{margin:0;font-family:var(--display);font-weight:400;font-size:1.4rem}
+.xbtn{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:1rem}
+.xbtn:hover{border-color:var(--accent);color:var(--ink)}
+.dlg-body{padding:6px 18px 18px;display:flex;flex-direction:column;gap:10px}
+.dlg-body p{margin:6px 0 0}
+.dlg-body ol,.dlg-body ul{margin:4px 0 0;padding-left:1.3em}
+.dlg-body li{margin:2px 0}
+.dnote{color:var(--muted);font-size:.9rem}
+.dlg-body code{font-size:.85em;background:var(--sunk);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.pbtn{font-size:.92rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 14px;cursor:pointer}
+.pbtn:hover{border-color:var(--accent)}
+.pbtn.pri{background:var(--accent);border-color:var(--accent);color:var(--bg);font-weight:700}
+.pbtn.warnbtn{border-color:var(--warn);color:var(--warn)}
+.filebtn{position:relative;overflow:hidden;display:inline-block}
+.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.card{border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--bg)}
+.card.warn{border-color:var(--warn);background:var(--warn-bg)}
+.card.warn p,.card.warn li{color:var(--ink)}
+.found{list-style:none;padding:0!important}
+.found li{padding:3px 0}
+.found .muted{color:var(--muted);font-size:.88rem}
+.toast{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);border-radius:10px;padding:10px 14px;display:flex;gap:14px;align-items:center;z-index:60;max-width:calc(100vw - 32px);box-shadow:0 6px 24px rgba(0,0,0,.25);font-size:.92rem}
+.toast button{font:inherit;font-weight:700;background:none;border:0;color:var(--coin);cursor:pointer;padding:0}
+.it.locked{opacity:.6}
+.tg.lock{color:var(--warn);border-color:var(--warn)}
+.savechest{font-size:.88rem;color:var(--muted);margin:6px 0 0}
 @media (max-width:560px){ .sync{order:5;flex-basis:100%;padding-bottom:6px} .brand{font-size:1.2rem} }
 @media (prefers-reduced-motion:reduce){ .bar>i,.sn::before{transition:none} }
 </style>
@@ -160,6 +196,7 @@ details.stop.done>summary .sn{color:var(--done)}
       <button type="button" class="tab" data-tab="stars">108 Stars</button>
     </nav>
     <span class="sync" id="sync">Saved in this browser</span>
+    <button type="button" class="savebtn" id="saveTopBtn" title="Tick what you've done from your Suikoden II save file (Steam)">⤒ <span class="lbl">Import save</span></button>
     <button type="button" class="authbtn" id="authBtn" hidden>Sign in to sync</button>
     <button type="button" class="themebtn" id="themeBtn"><span class="ti" aria-hidden="true">◐</span> <span class="tl">Auto</span></button>
   </div>
@@ -170,6 +207,7 @@ details.stop.done>summary .sn{color:var(--done)}
     <div class="stat stars"><div class="lab"><b>Stars of Destiny</b><span id="starCt">0 / 108</span></div><div class="bar"><i id="starBar"></i></div></div>
     <div class="stat"><div class="lab"><b>Treasure</b><span id="treCt">0 / 0</span></div><div class="bar"><i id="treBar"></i></div></div>
   </section>
+  <p class="savestat" id="saveStat" hidden></p>
 
   <div id="routeView">
     <p class="intro">Every stop in story order, first visits and the trips back. Each one lists who you can recruit there right now and what to pick up. Recruits marked <span class="tg m">Missable</span> have a deadline, and <span class="tg c">Castle Lv 2</span> means your headquarters has to have grown that far first.</p>
@@ -210,6 +248,38 @@ details.stop.done>summary .sn{color:var(--done)}
   </footer>
 </div>
 
+<dialog class="savedlg" id="saveDlg" aria-labelledby="saveDlgTitle">
+  <div class="dlg-head"><h2 id="saveDlgTitle">Fill in from my save</h2><button type="button" class="xbtn" id="saveClose" aria-label="Close">✕</button></div>
+  <div class="dlg-body">
+    <p>Pick your Suikoden II save and the checklist ticks what you've already done. The file is read right here in your browser and never uploaded anywhere.</p>
+    <div>
+      <p><b>Where to find it</b> (Steam on PC or Steam Deck):</p>
+      <ol>
+        <li>In Steam, right-click <b>Suikoden I &amp; II HD Remaster</b> and choose <b>Manage → Browse local files</b>.</li>
+        <li>Open <b>Save</b>, then the folder with a long number, then <b>gsd2</b>.</li>
+        <li>Pick the slot you play on: <b>Data0</b> to <b>Data16</b>. Not sure which? Take the newest one.</li>
+      </ol>
+      <p class="dnote">Copy the path if you like: <code>steamapps\common\Suikoden I and II HD Remaster\Save\&lt;number&gt;\gsd2</code></p>
+    </div>
+    <div>
+      <p><b>What it can tick</b></p>
+      <ul>
+        <li>All 108 Stars of Destiny, straight from the game's own records</li>
+        <li>Recipes you've learned</li>
+        <li>Chests at the stops we've matched to the save so far (<span id="chestMapN"></span>). The rest of the chests are counted but can't be placed yet.</li>
+      </ul>
+      <p class="dnote">It also reads your castle level, so recruits your castle isn't big enough for yet are greyed out.</p>
+    </div>
+    <p class="dnote" id="quickNote" hidden></p>
+    <div id="quickBox" hidden></div>
+    <div id="rememberBox"></div>
+    <div class="btnrow"><button type="button" class="pbtn pri" id="savePickBtn" hidden>Choose save file</button><label class="pbtn pri filebtn" id="saveFileLbl">Choose save file<input type="file" id="saveFile"></label></div>
+    <div id="saveBox" hidden></div>
+    <p class="dnote">Save decoding thanks to the open-source <a href="https://github.com/nintendogamer15/Suikoden-HD-Remaster-Save-Editor" target="_blank" rel="noopener">Suikoden HD Remaster Save Editor</a>, <a href="https://github.com/faospark/suisaveeditor" target="_blank" rel="noopener">SuiSaveEditor</a> and <a href="https://github.com/d3xMachina/Suikoden-Fix" target="_blank" rel="noopener">d3xMachina</a>'s save research.</p>
+  </div>
+</dialog>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
 <script>
 // ================= Data
 // Stars: id → display name. Exactly 108 entries; three of them stand for a choice the game makes you take.
@@ -232,6 +302,31 @@ const STARS = {
 };
 // Characters who join but aren't one of the 108
 const BONUS = { mcdohl:"Tir McDohl", rulodia:"Rulodia", chuchara:"Chuchara" };
+
+// Save file: each Star's character number(s) in the save's chara_flag list.
+// From the Suikoden HD Remaster save editors' tables; Taki (103) from asilverthorn's suikoden_ref.
+const SAVE_CHARS = {
+  hero:[1], flik:[2], viktor:[3], viki:[4], sheena:[5], clive:[6], hix:[7], tengaar:[8], futch:[9], humphrey:[10], georg:[11],
+  kasval:[12,73], pesmerga:[13], lorelai:[14], shin:[15], rikimaru:[16], tomo:[17], nanami:[18], eilie:[19], rina:[20], bolgan:[21],
+  tuta:[22], hanna:[23], millie:[24,83], karen:[25], shiro:[26], zamza:[27], gengen:[28], gabocha:[29], kinnison:[30], shilo:[31],
+  miklotov:[32], camus:[33], hauser:[34], freed:[35], kahn:[36], amada:[37], taiho:[38], anita:[39], bob:[40], meg:[41], gadget:[42],
+  ayda:[43], killey:[44], sierra:[45], oulan:[46], genshu:[47], mukumuku:[48], sigabi:[72,49], feather:[50], badeaux:[51], tsai:[52],
+  luc:[53], chaco:[54], nina:[55], sid:[56], yoshino:[57], gijimu:[58], koyu:[59], lowen:[60], mazus:[61], sasuke:[62], mondo:[63],
+  vincent:[64], simone:[65], haiyo:[66], stallion:[67], wakaba:[68], lcchan:[69], gantetsu:[70], hoi:[71], apple:[85], templeton:[86],
+  kiba:[87], fitcher:[88], shu:[89], tetsu:[90], leona:[91], huan:[92], jess:[93], hilda:[94], alex:[95], emilia:[96], tenkou:[97],
+  barbara:[98], richmond:[99], yamkoo:[100], teresa:[101], yuzu:[102], taki:[103], tony:[104], adlai:[105], gordon:[106], hans:[107],
+  connell:[108], lebrante:[109], tessai:[110], raura:[111], annallee:[112], pico:[113], alberto:[114], jude:[115], jeane:[116],
+  ridley:[117,122], klaus:[118], maximillian:[119], marlowe:[120], gilbert:[121],
+  mcdohl:[82], rulodia:[74], chuchara:[79],
+};
+// Recruit status values: joined (automatically 70, by you 71), with you but locked by the story (86), on leave (213), died (212).
+const JOINED = new Set([70, 71, 86, 213]), DIED = 212;
+// Chests the save tracks as on/off switches (t_box_flag bits). Matched to stops by comparing saves:
+// a save at North Sparrow Pass had 4 switches on, a later one after Ryube Forest had 2 more.
+const CHEST_GROUPS = [
+  { stop:"ch1-north-sparrow-pass", bits:[136,137,138,139] },
+  { stop:"ch2-ryube-forest-return", bits:[140,141] },
+];
 
 // Route: chapters → stops. A stop is one visit to a place.
 // r: recruits [id, how, flags]  flags: m = missable, a = joins on their own, 2/3/4 = castle level, x = second chance
@@ -431,16 +526,20 @@ const nameOf = id => STARS[id] || BONUS[id] || id;
 let stars = new Set(), tre = new Set();
 try { stars = new Set(JSON.parse(localStorage.getItem(LS + "-stars") || "[]")); } catch (e) {}
 try { tre = new Set(JSON.parse(localStorage.getItem(LS + "-treasure") || "[]")); } catch (e) {}
+// What the last imported save said (castle level, chests opened, etc.)
+let saveInfo = null;
+try { saveInfo = JSON.parse(localStorage.getItem(LS + "-saveinfo") || "null"); } catch (e) {}
 const REMOTES = [];
 let writing = false, pending = false, timer = null;
 function saveLocal() {
   try {
     localStorage.setItem(LS + "-stars", JSON.stringify([...stars]));
     localStorage.setItem(LS + "-treasure", JSON.stringify([...tre]));
+    if (saveInfo) localStorage.setItem(LS + "-saveinfo", JSON.stringify(saveInfo)); else localStorage.removeItem(LS + "-saveinfo");
   } catch (e) {}
 }
 function setSync(t) { $("#sync").textContent = t; }
-const payload = () => ({ stars: [...stars], treasure: [...tre], updated: new Date().toISOString() });
+const payload = () => ({ stars: [...stars], treasure: [...tre], save: saveInfo, updated: new Date().toISOString() });
 async function flush() {
   if (!REMOTES.length) return;
   if (writing) { pending = true; return; }
@@ -457,7 +556,11 @@ function mergeIn(d) {
   const arr = v => Array.isArray(v) ? v : [];
   const rS = arr(d.stars), rT = arr(d.treasure);
   const mS = new Set([...rS, ...stars]), mT = new Set([...rT, ...tre]);
-  const changed = mS.size !== rS.length || mT.size !== rT.length;
+  let changed = mS.size !== rS.length || mT.size !== rT.length;
+  // keep whichever save import is newer
+  const rSave = d.save && typeof d.save === "object" ? d.save : null;
+  if (rSave && (!saveInfo || (rSave.at || "") > (saveInfo.at || ""))) saveInfo = rSave;
+  else if (saveInfo && (!rSave || (saveInfo.at || "") > (rSave.at || ""))) changed = true;
   stars = mS; tre = mT; saveLocal(); renderAll();
   return changed;
 }
@@ -486,12 +589,13 @@ const stopTotals = st => {
            missLeft: st.recs.filter(r => r.m && !recDone(r)).length };
 };
 const stopComplete = st => { const t = stopTotals(st); return t.rDone === t.rAll && t.iDone === t.iAll; };
+const castleLocked = r => !!(r.cl && saveInfo && Number.isFinite(saveInfo.castle) && !stars.has(r.id) && +r.cl > saveInfo.castle);
 function tags(r) {
   let h = "";
   if (r.m) h += `<span class="tg m">Missable</span>`;
   if (r.x) h += `<span class="tg r">Second chance</span>`;
   if (r.o) h += `<span class="tg r">The other option</span>`;
-  if (r.cl) h += `<span class="tg c">Castle Lv ${r.cl}</span>`;
+  if (r.cl) h += castleLocked(r) ? `<span class="tg c lock" title="From your save">Castle Lv ${r.cl} · ${saveInfo.castle ? `yours is ${saveInfo.castle}` : "no castle yet"}</span>` : `<span class="tg c">Castle Lv ${r.cl}</span>`;
   if (r.a) h += `<span class="tg a">Joins on their own</span>`;
   if (r.b) h += `<span class="tg b">Not a Star</span>`;
   return h;
@@ -546,7 +650,7 @@ function renderRoute() {
       if (st.note) body += `<p class="note">${esc(st.note)}</p>`;
       if (st.warn) body += `<ul class="warns">${st.warn.map(w => `<li>${esc(w)}</li>`).join("")}</ul>`;
       if (recs.length) body += `<div class="grp rec"><h4>Recruit</h4><div class="list">${recs.map(r => `
-        <label class="it"><input type="checkbox" data-star="${r.id}"${recDone(r) ? " checked" : ""}>
+        <label class="it${castleLocked(r) ? " locked" : ""}"><input type="checkbox" data-star="${r.id}"${recDone(r) ? " checked" : ""}>
           <span class="top"><span class="nm">${esc(nameOf(r.id))}</span>${tags(r)}${repLink(st, "Recruit", nameOf(r.id), r.how)}</span>
           <span class="how">${esc(r.how)}</span></label>`).join("")}</div></div>`;
       if (items.length) body += `<div class="grp tre"><h4>Treasure</h4><div class="list">${items.map(i => `
@@ -554,6 +658,8 @@ function renderRoute() {
           <span class="top"><span class="nm">${esc(i.n)}</span>${i.bought ? `<span class="tg a">Buy</span>` : ""}${repLink(st, "Treasure", i.n, i.w)}</span>
           <span class="how">${esc(i.w)}</span></label>`).join("")}</div></div>`;
       if (st.boss) body += `<p class="boss">Boss: <b>${esc(st.boss)}</b></p>`;
+      const sg = saveInfo && saveInfo.groups && saveInfo.groups[st.id];
+      if (sg && sg[0] && sg[0] < sg[1]) body += `<p class="savechest">Your save: ${sg[0]} of ${sg[1]} chests opened here (it can't tell which yet).</p>`;
       body += `<p class="stoprep"><a href="${issueUrl(st)}" target="_blank" rel="noopener">Missing something here? Tell me</a></p>`;
       parts.push({ st, complete, html: `<summary><span class="sn">${esc(st.n)}${st.v ? `<span class="vis">${esc(st.v)}</span>` : ""}</span><span class="badges">${badges}</span></summary><div class="body">${body}</div>` });
     }
@@ -602,6 +708,12 @@ function renderTotals() {
   const sd = STAR_IDS.filter(id => stars.has(id)).length, td = ALLITEMS.filter(i => tre.has(i.id)).length;
   $("#starCt").textContent = `${sd} / 108`; $("#starBar").style.width = (sd / 108 * 100) + "%";
   $("#treCt").textContent = `${td} / ${ALLITEMS.length}`; $("#treBar").style.width = (td / ALLITEMS.length * 100) + "%";
+  const ss = $("#saveStat");
+  if (saveInfo) {
+    const when = saveInfo.at ? new Date(saveInfo.at).toLocaleDateString(undefined, { month: "short", day: "numeric" }) : "";
+    ss.innerHTML = `From your save${saveInfo.file ? ` <b>${esc(saveInfo.file)}</b>` : ""}${when ? ` (${esc(when)})` : ""}: ${saveInfo.time ? `<b>${esc(saveInfo.time)}</b> played, ` : ""}${saveInfo.castle ? `castle <b>Lv ${saveInfo.castle}</b>` : "no castle yet"}, <b>${saveInfo.chests}</b> chests opened. <button type="button" data-open-save>Update</button>`;
+    ss.hidden = false;
+  } else ss.hidden = true;
 }
 function renderAll() { renderTotals(); if (view === "route") renderRoute(); else renderStars(); }
 function setView(v) {
@@ -706,6 +818,217 @@ $("#resetBox").addEventListener("click", e => {
   });
   apply();
 })();
+
+// ================= Save import (Steam saves: "GR_DATA:" + base64 of salt + AES-256-CBC encrypted JSON)
+// Key and IV come from SHA-256 over (previous block + password + salt), as worked out by the save editor projects.
+const SAVE_PW = new TextEncoder().encode("auDotXSC3fCBCwQk1nQ3aT7Xe1Vk3BmG");
+async function decryptSave(text) {
+  text = text.replace(/^\uFEFF/, "").trim();
+  if (!text.startsWith("GR_DATA:")) throw new Error("not a save");
+  const raw = Uint8Array.from(atob(text.slice(8)), c => c.charCodeAt(0));
+  if (raw.length < 32) throw new Error("too short");
+  const salt = raw.subarray(0, 16);
+  let km = new Uint8Array(0);
+  while (km.length < 48) {
+    const buf = new Uint8Array(km.length + SAVE_PW.length + salt.length);
+    buf.set(km); buf.set(SAVE_PW, km.length); buf.set(salt, km.length + SAVE_PW.length);
+    const h = new Uint8Array(await crypto.subtle.digest("SHA-256", buf));
+    const next = new Uint8Array(km.length + h.length); next.set(km); next.set(h, km.length); km = next;
+  }
+  const key = await crypto.subtle.importKey("raw", km.subarray(0, 32), "AES-CBC", false, ["decrypt"]);
+  const plain = await crypto.subtle.decrypt({ name: "AES-CBC", iv: km.subarray(32, 48) }, key, raw.subarray(16));
+  return JSON.parse(new TextDecoder().decode(plain).replace(/^\uFEFF/, ""));
+}
+const bitOn = (arr, i) => !!((arr?.[i >> 3] || 0) & (1 << (i & 7)));
+const RECIPE_ITEMS = ALLITEMS.map(i => [i, /^Recipe #(\d+)$/.exec(i.n)]).filter(([, m]) => m).map(([i, m]) => ({ id: i.id, n: +m[1] }));
+// Read what a decrypted save says
+function saveFindings(j, fileName) {
+  const g = j.game_data || {};
+  if (!Array.isArray(j.chara_flag) || !("bozu_name" in g)) throw new Error("s1");
+  const cf = j.chara_flag, st = n => cf[n] || 0;
+  const fStars = new Set(), dead = [], fTre = new Set(), known = new Set(), groups = {};
+  for (const [sid, nums] of Object.entries(SAVE_CHARS)) {
+    if (nums.some(n => JOINED.has(st(n)))) fStars.add(sid);
+    else if (STARS[sid] && nums.some(n => st(n) === DIED)) dead.push(sid);
+  }
+  // recipes: one bit each, recipe #1 is bit 0
+  for (const r of RECIPE_ITEMS) { known.add(r.id); if (bitOn(g.food_resipi, r.n - 1)) fTre.add(r.id); }
+  // chests at the stops we've matched; a partly opened stop is left alone since we can't say which ones
+  const tb = j.t_box_flag || [];
+  for (const cg of CHEST_GROUPS) {
+    const stop = STOPS.find(s => s.id === cg.stop); if (!stop) continue;
+    const on = cg.bits.filter(b => bitOn(tb, b)).length;
+    groups[cg.stop] = [on, cg.bits.length];
+    if (on === cg.bits.length) stop.items.forEach(i => { fTre.add(i.id); known.add(i.id); });
+    else if (on === 0) stop.items.forEach(i => known.add(i.id));
+  }
+  const chests = tb.reduce((n, b) => n + ((b || 0).toString(2).match(/1/g) || []).length, 0);
+  const pt = Array.isArray(g.play_time) ? g.play_time : null;
+  return { stars: fStars, tre: fTre, known, dead,
+    info: { castle: Number(g.base_lv) || 0, chests, groups, s1: !!g.macd_name, name: g.bozu_name || "", file: fileName || "",
+            time: pt ? `${pt[0]}h ${String(pt[1]).padStart(2, "0")}m` : "", at: new Date().toISOString() } };
+}
+function saveCompare(fd) {
+  const addS = [...fd.stars].filter(id => !stars.has(id));
+  const dropS = [...Object.keys(SAVE_CHARS)].filter(id => stars.has(id) && !fd.stars.has(id));
+  const addT = [...fd.tre].filter(id => !tre.has(id));
+  const dropT = [...fd.known].filter(id => tre.has(id) && !fd.tre.has(id));
+  return { addS, dropS, addT, dropT, addN: addS.length + addT.length, dropN: dropS.length + dropT.length };
+}
+const itemName = id => { const i = ALLITEMS.find(x => x.id === id); return i ? i.n : id; };
+let pendingSave = null;
+function renderSaveBox() {
+  const p = pendingSave, box = $("#saveBox"); if (!p) return;
+  const { fd, cmp } = p, I = fd.info;
+  const sN = STAR_IDS.filter(id => fd.stars.has(id)).length;
+  let h = `<div class="card"><p><b>${esc(I.name || "Your save")}</b>${I.time ? `, ${esc(I.time)} played` : ""}. Your save shows:</p><ul class="found">
+    <li><b>${sN}</b> of the 108 Stars recruited ${cmp.addS.length ? `<span class="muted">(${cmp.addS.length} not ticked yet)</span>` : ""}</li>
+    <li><b>${RECIPE_ITEMS.filter(r => fd.tre.has(r.id)).length}</b> of the ${RECIPE_ITEMS.length} recipes on this list learned</li>
+    <li><b>${I.chests}</b> chests opened in all, ${[...fd.tre].filter(id => !RECIPE_ITEMS.some(r => r.id === id)).length} of them placed on this checklist so far</li>
+    <li>${I.castle ? `Castle level <b>${I.castle}</b>` : "No castle yet"}${I.s1 ? ` · Suikoden I clear data loaded, so Tir McDohl can join later` : ""}</li></ul></div>`;
+  if (fd.dead.length) h += `<div class="card warn"><p><b>Your save says ${fd.dead.map(nameOf).map(esc).join(", ")} died</b>, most likely in a war battle. All 108 Stars (and the best ending) aren't possible on this save any more. If you have an older save from before that battle, it's worth going back to.</p></div>`;
+  if (p.step === "confirm") {
+    const ex = [...cmp.dropS.map(nameOf), ...cmp.dropT.map(itemName)];
+    box.innerHTML = h + `<div class="card warn"><p><b>Untick ${cmp.dropN} thing${cmp.dropN === 1 ? "" : "s"} you ticked yourself?</b> Your save says ${cmp.dropN === 1 ? "it isn't" : "they aren't"} done yet:</p>
+      <ul>${ex.slice(0, 8).map(x => `<li>${esc(x)}</li>`).join("")}${ex.length > 8 ? `<li class="muted">and ${ex.length - 8} more</li>` : ""}</ul>
+      <p class="dnote">Treasure the save can't place yet stays as it is. You can undo this straight after.</p></div>
+      <div class="btnrow"><button type="button" class="pbtn warnbtn" data-save="match">Yes, match my save</button><button type="button" class="pbtn" data-save="back">Back</button></div>`;
+    box.querySelector('[data-save="back"]').focus();
+    return;
+  }
+  if (cmp.dropN) h += `<div class="card warn"><p><b>Heads up:</b> ${cmp.dropN} of your ticks ${cmp.dropN === 1 ? "isn't" : "aren't"} in this save. They may be from another save slot or ticked by mistake. ${cmp.addN ? "<b>Add from save</b> keeps them" : "Nothing new to add, so <b>Cancel</b> keeps them"}; <b>Match my save</b> unticks them.</p></div>
+    <div class="btnrow">${cmp.addN ? `<button type="button" class="pbtn pri" data-save="add">Add from save (keep my ticks)</button>` : ""}<button type="button" class="pbtn" data-save="ask">Match my save…</button><button type="button" class="pbtn" data-save="no">Cancel</button></div>`;
+  else if (cmp.addN) h += `<div class="btnrow"><button type="button" class="pbtn pri" data-save="add">Tick ${cmp.addN} thing${cmp.addN === 1 ? "" : "s"}</button><button type="button" class="pbtn" data-save="no">Cancel</button></div>`;
+  else h += `<p>Your checklist already matches this save.</p><div class="btnrow"><button type="button" class="pbtn pri" data-save="add">Done</button></div>`;
+  box.innerHTML = h;
+}
+// Toast with an optional Undo
+let toastTimer = null;
+function showToast(msg, undo) {
+  const t = $("#toast");
+  t.innerHTML = `<span>${esc(msg)}</span>${undo ? `<button type="button" id="toastUndo">Undo</button>` : ""}`;
+  t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, undo ? 9000 : 4000);
+  if (undo) $("#toastUndo").onclick = () => { undo(); t.hidden = true; };
+}
+function applySave(fd, cmp, act, msg) {
+  const before = { stars: new Set(stars), tre: new Set(tre), saveInfo };
+  cmp.addS.forEach(id => stars.add(id)); cmp.addT.forEach(id => tre.add(id));
+  if (act === "match") { cmp.dropS.forEach(id => stars.delete(id)); cmp.dropT.forEach(id => tre.delete(id)); }
+  saveInfo = fd.info; save(); renderAll();
+  showToast(msg, () => { stars = before.stars; tre = before.tre; saveInfo = before.saveInfo; save(); renderAll(); showToast("Undone"); });
+}
+async function readSaveFile(f, o = {}) {
+  const box = $("#saveBox"); box.hidden = false; box.innerHTML = `<p>Reading ${esc(f.name)}…</p>`;
+  let j;
+  try { j = await decryptSave(await f.text()); }
+  catch (e) { pendingSave = null; box.innerHTML = `<div class="card warn"><p>That doesn't look like a Suikoden save. Pick one of the files named <b>Data0</b> to <b>Data16</b> in the <b>gsd2</b> folder.</p></div>`; if (o.quick) openSaveDlg(); return false; }
+  let fd;
+  try { fd = saveFindings(j, f.name); }
+  catch (e) { pendingSave = null; box.innerHTML = `<div class="card warn"><p>That's a <b>Suikoden I</b> save. Suikoden II saves are in the <b>gsd2</b> folder next to it.</p></div>`; if (o.quick) openSaveDlg(); return false; }
+  const cmp = saveCompare(fd);
+  // one-click update: if nothing of yours would be unticked, just add (Undo is offered)
+  if (o.quick && !cmp.dropN && !fd.dead.length) {
+    box.hidden = true; pendingSave = null;
+    saveInfo = fd.info; save(); renderAll();
+    if (!cmp.addN) { showToast(`Already up to date with ${f.name}`); return true; }
+    applySave(fd, cmp, "add", `Updated from ${f.name}: ${cmp.addN} new tick${cmp.addN === 1 ? "" : "s"}`);
+    return true;
+  }
+  pendingSave = { fd, cmp, step: "summary" };
+  if (o.quick) openSaveDlg();
+  renderSaveBox();
+  if (o.offerRemember) offerRemember(o.offerRemember);
+  return true;
+}
+$("#saveBox").addEventListener("click", e => {
+  const b = e.target.closest("button[data-save]"); if (!b || !pendingSave) return;
+  const act = b.dataset.save, { fd, cmp } = pendingSave;
+  if (act === "ask") { pendingSave.step = "confirm"; renderSaveBox(); return; }
+  if (act === "back") { pendingSave.step = "summary"; renderSaveBox(); return; }
+  pendingSave = null; $("#saveBox").hidden = true;
+  if (act === "no") return;
+  $("#saveDlg").close();
+  if (act === "add" && !cmp.addN) { saveInfo = fd.info; save(); renderAll(); showToast("Your checklist matches your save"); return; }
+  applySave(fd, cmp, act, act === "match" ? `Matched your save (${cmp.dropN} unticked)` : `Added ${cmp.addN} tick${cmp.addN === 1 ? "" : "s"} from your save`);
+});
+$("#saveFile").addEventListener("change", e => { const f = e.target.files?.[0]; e.target.value = ""; if (f) readSaveFile(f); });
+
+// One-click updates: Chrome and Edge on a computer can keep a link to the save file (not a copy) in this browser
+const QUICK = { ok: false, handle: null };
+const idb = (() => {
+  let dbp = null;
+  const open = () => dbp || (dbp = new Promise((res, rej) => { const r = indexedDB.open("s2-quick-save", 1); r.onupgradeneeded = () => r.result.createObjectStore("kv"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+  const tx = (mode, fn) => open().then(db => new Promise((res, rej) => { const t = db.transaction("kv", mode); const out = fn(t.objectStore("kv")); t.oncomplete = () => res(out && out.result); t.onerror = () => rej(t.error); }));
+  return { get: k => tx("readonly", s => s.get(k)), set: (k, v) => tx("readwrite", s => s.put(v, k)), del: k => tx("readwrite", s => s.delete(k)) };
+})();
+async function quickInit() {
+  try {
+    if (!("showOpenFilePicker" in window) || !window.indexedDB || window.top !== window.self) { renderQuick(); return; }
+    QUICK.ok = true; $("#savePickBtn").hidden = false; $("#saveFileLbl").hidden = true;
+    QUICK.handle = (await idb.get("save")) || null;
+  } catch (e) { QUICK.ok = false; }
+  renderQuick();
+}
+function renderQuick() {
+  const box = $("#quickBox"), note = $("#quickNote"), lbl = $("#saveTopBtn .lbl");
+  note.innerHTML = QUICK.ok
+    ? (QUICK.handle ? "" : "Tip: this browser can remember your save file so later updates take one click. You'll be offered that after you pick it.")
+    : "Tip: one-click updates work in <b>Chrome</b> and <b>Edge</b> on a computer. Elsewhere you just pick the file each time.";
+  note.hidden = !note.innerHTML;
+  if (!QUICK.ok || !QUICK.handle) { box.hidden = true; lbl.textContent = "Import save"; return; }
+  box.hidden = false;
+  box.innerHTML = `<div class="card"><p><b>Quick update is on</b> for <code>${esc(QUICK.handle.name)}</code>. Save in the game, then press <b>Update save</b> in the top bar to tick anything new.</p>
+    <div class="btnrow"><button type="button" class="pbtn pri" data-quick="update">Update now</button><button type="button" class="pbtn" data-quick="forget">Forget this file</button></div></div>`;
+  lbl.textContent = "Update save";
+}
+function offerRemember(handle) {
+  const box = $("#rememberBox"); box.innerHTML = "";
+  const card = document.createElement("div"); card.className = "card";
+  card.innerHTML = `<p><b>Remember ${esc(handle.name)} for one-click updates?</b></p>
+    <p class="dnote">This browser keeps a link to the file, not a copy. Next time, <b>Update save</b> re-reads it straight away (your browser asks first). It's never uploaded, and you can forget it any time. If you start a new game in the same slot, forget it first.</p>
+    <div class="btnrow"><button type="button" class="pbtn pri" data-quick="remember">Remember it</button><button type="button" class="pbtn" data-quick="noremember">Not now</button></div>`;
+  card._handle = handle; box.appendChild(card);
+}
+async function pickAndRead() {
+  try {
+    const [h] = await window.showOpenFilePicker({ id: "s2-save", multiple: false });
+    const same = QUICK.handle && (await QUICK.handle.isSameEntry?.(h).catch(() => false));
+    await readSaveFile(await h.getFile(), { offerRemember: same ? null : h });
+  } catch (e) { /* picker closed */ }
+}
+async function quickUpdate() {
+  const h = QUICK.handle; if (!h) return pickAndRead();
+  try {
+    let perm = await h.queryPermission({ mode: "read" });
+    if (perm !== "granted") perm = await h.requestPermission({ mode: "read" });
+    if (perm !== "granted") { showToast("Your browser didn't allow reading the save file"); return; }
+    await readSaveFile(await h.getFile(), { quick: true });
+  } catch (e) { showToast("Couldn't find the save file. It may have moved; pick it again."); openSaveDlg(); }
+}
+$("#savePickBtn").addEventListener("click", pickAndRead);
+document.addEventListener("click", async e => {
+  if (e.target.closest("[data-open-save]")) { openSaveDlg(); return; }
+  const b = e.target.closest("[data-quick]"); if (!b) return;
+  const act = b.dataset.quick;
+  if (act === "update") { $("#saveDlg").close(); quickUpdate(); return; }
+  if (act === "forget") { try { await idb.del("save"); } catch (err) {} QUICK.handle = null; renderQuick(); showToast("Forgot the save file"); return; }
+  const card = b.closest(".card");
+  if (act === "remember" && card?._handle) {
+    try { await idb.set("save", card._handle); QUICK.handle = card._handle; showToast(`Quick update is on for ${card._handle.name}`); }
+    catch (err) { showToast("This browser couldn't remember the file"); }
+    card.remove(); renderQuick();
+  }
+  if (act === "noremember") card?.remove();
+});
+function openSaveDlg() {
+  const d = $("#saveDlg");
+  $("#chestMapN").textContent = `${CHEST_GROUPS.length} stop${CHEST_GROUPS.length === 1 ? "" : "s"} so far`;
+  if (!d.open) d.showModal();
+}
+$("#saveClose").addEventListener("click", () => $("#saveDlg").close());
+$("#saveDlg").addEventListener("click", e => { if (e.target === e.currentTarget) e.currentTarget.close(); });
+$("#saveTopBtn").addEventListener("click", () => { if (QUICK.ok && QUICK.handle) quickUpdate(); else openSaveDlg(); });
+quickInit();
 
 setView(view);
 </script>
